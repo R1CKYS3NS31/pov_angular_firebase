@@ -28,7 +28,7 @@ export class AccountService {
   public readonly account = this.authService.account();
   public readonly isAuthenticated = this.authService.isAuthenticated();
 
-  async loadMyPoVs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
+  async getMyPoVs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
     this.loadingSignal.set(true);
     if (!this.isAuthenticated || !this.account?.uid) return this.myPoVsSignal();
 
@@ -44,8 +44,10 @@ export class AccountService {
             lastVisible: response.lastVisible,
             last: response.last
           }));
+          // this.notificationService.notify("My PoVs loaded successfully!", "success");
         } else {
           this.myPoVsSignal.set(response);
+          // this.notificationService.notify("My PoVs loaded successfully!", "success");
         }
         return response;
       }).catch((error: any) => {

@@ -31,10 +31,11 @@ export class PovService {
   public readonly povs = computed(() => this.povsSignal());
   public readonly povsByAuthor = computed(() => this.povsByAuthorSignal());
 
-  async loadGlobalPovs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
+  async getPovs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
     this.loadingSignal.set(true);
     return await getPoVsPublishedFirebase({ lastVisible })
       .then(response => {
+        // console.log("getPovs response: ", response);
         if (lastVisible) {
           this.povsSignal.update(povs => ({
             ...povs,
@@ -44,8 +45,10 @@ export class PovService {
             lastVisible: response.lastVisible,
             last: response.last
           }));
+          // this.notificationService.notify("PoVs loaded successfully!", "success");
         } else {
           this.povsSignal.set(response);
+          // this.notificationService.notify("PoVs loaded successfully!", "success");
         }
         return response;
       }).catch((error: any) => {

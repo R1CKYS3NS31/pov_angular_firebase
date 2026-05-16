@@ -12,34 +12,46 @@ import type { User } from "../models/user.model";
 export class AuthService {
     private notificationService = inject(NotificationService);
 
-    private userSignal = signal<User | null>(null);
+    private userSignal = signal<User>({
+        id: "",
+        name: {
+            first: "Guest",
+            last: "User",
+            full: "Guest User"
+        },
+        displayName: "Guest User",
+        email: "",
+        displayPicture: "",
+        description: "I am a new PoV supporter ready to explore different perspectives!",
+    });
+    private isAuthenticatedSignal = signal<boolean>(false);
     private loadingSignal = signal<boolean>(true);
-    private authLoadingSignal = signal<boolean>(false);
 
     // Todo: confirm that it is account.id not account.uid
     public readonly account = computed<User | null>(() => this.userSignal());
-    public readonly loading = computed<boolean>(() => this.loadingSignal() || this.authLoadingSignal());
-    public readonly isAuthenticated = computed<boolean>(() => !!this.userSignal());
+    public readonly loading = computed<boolean>(() => this.loadingSignal());
+    public readonly isAuthenticated = computed<boolean>(() => this.isAuthenticatedSignal());
 
     constructor() {
-        onAuthStateChangedFirebase(async (currentUser: FirebaseUser | null) => {
-            this.loadingSignal.set(true);
+        onAuthStateChangedFirebase( async (currentUser: FirebaseUser | null) => {
+             this.loadingSignal.set(true);
             // console.log("AuthState - currentUser", currentUser);
             if (currentUser) {
                 await getUserFirebase(currentUser.uid)
                     .then((userFirestore) => {
                         this.userSignal.set(userFirestore);
+                        this.isAuthenticatedSignal.set(true);
+                        // this.notificationService.notify("Still Signed in successfully!", "success");
                         // console.log("AuthState - userFirestore", userFirestore);
                     })
                     .catch((error) => {
                         this.notificationService.handleApiError(error);
-                        this.userSignal.set(null);
                     })
                     .finally(() => {
                         this.loadingSignal.set(false);
                     })
             } else {
-                this.userSignal.set(null);
+                this.notificationService.notify("failed to check auth state! You're not logged in!", "error");
                 this.loadingSignal.set(false);
             }
         });
@@ -48,7 +60,7 @@ export class AuthService {
     async handleSignUp(userData: any) {
         const { email, password, name, description } = userData;
         const displayName = `${name?.first || ""} ${name?.last || ""}`.trim();
-        this.authLoadingSignal.set(true);
+        this.loadingSignal.set(true);
 
 
         return await signUpUserWithEmailAndPassword(
@@ -77,18 +89,18 @@ export class AuthService {
                 this.notificationService.handleApiError(error);
                 throw error;
             }).finally(() => {
-                this.authLoadingSignal.set(false);
+                this.loadingSignal.set(false);
             })
         }).catch(error => {
             this.notificationService.handleApiError(error);
             throw error;
         }).finally(() => {
-            this.authLoadingSignal.set(false);
+            this.loadingSignal.set(false);
         })
     }
 
     async handleSignIn(email: string, password: string) {
-        this.authLoadingSignal.set(true);
+        this.loadingSignal.set(true);
         return await signInUserWithEmailAndPassword(email, password)
             .then(async firebaseUser => {
                 // console.log(" SignIn - firebaseUser", firebaseUser)
@@ -102,19 +114,19 @@ export class AuthService {
                         this.notificationService.handleApiError(error);
                         throw error;
                     }).finally(() => {
-                        this.authLoadingSignal.set(false);
+                        this.loadingSignal.set(false);
                     })
             }).catch(error => {
                 this.notificationService.handleApiError(error);
                 throw error;
             }).finally(() => {
-                this.authLoadingSignal.set(false);
+                this.loadingSignal.set(false);
             })
 
     }
 
     async handleGoogleSignIn() {
-        this.authLoadingSignal.set(true);
+        this.loadingSignal.set(true);
 
         await signInWithGoogleAuth()
             .then(async ({ user, isNewUser }) => {
@@ -139,7 +151,7 @@ export class AuthService {
                         this.notificationService.handleApiError(error);
                         throw error;
                     }).finally(() => {
-                        this.authLoadingSignal.set(false);
+                        this.loadingSignal.set(false);
                     })
                 }
 
@@ -153,13 +165,13 @@ export class AuthService {
                         this.notificationService.handleApiError(error);
                         throw error;
                     }).finally(() => {
-                        this.authLoadingSignal.set(false);
+                        this.loadingSignal.set(false);
                     })
             }).catch(error => {
                 this.notificationService.handleApiError(error);
                 throw error;
             }).finally(() => {
-                this.authLoadingSignal.set(false);
+                this.loadingSignal.set(false);
             })
     }
 
@@ -175,6 +187,7 @@ export class AuthService {
 
         await updateUserFirebase(this.account()?.id!, userData)
             .then(updatedUser => {
+                // console.log("updateAccount response: ", updatedUser);
                 this.userSignal.update(user => ({
                     ...user,
                     ...updatedUser
@@ -198,7 +211,7 @@ export class AuthService {
 
         await deleteUserFirebase(this.account()?.id!)
             .then(async () => {
-                this.userSignal.set(null);
+                this.userSignal();
                 this.notificationService.notify("User account deleted successfully!", "success");
                 await this.handleSignOut();
             }).catch(error => {
@@ -212,17 +225,17 @@ export class AuthService {
 
 
     async handleSignOut() {
-        this.authLoadingSignal.set(true);
+        this.loadingSignal.set(true);
         await signOutFirebaseUser()
             .then(() => {
-                this.userSignal.set(null);
+                this.userSignal();
                 this.notificationService.notify("User account signed out successfully!", "success");
             })
             .catch(error => {
                 this.notificationService.handleApiError(error);
                 throw error;
             }).finally(() => {
-                this.authLoadingSignal.set(false);
+                this.loadingSignal.set(false);
             })
     }
 

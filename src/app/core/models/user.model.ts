@@ -12,7 +12,6 @@ export interface User {
   email: string;
   description?: string;
   displayPicture?: string;
-  isUser: boolean;
   createdAt?: string;
   updatedAt?: string;
   exists?: boolean;
