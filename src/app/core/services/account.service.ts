@@ -1,77 +1,179 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { AuthService } from './auth.service';
-import { deleteUserFirebase, getUserFirebase, updateUserFirebase } from '../firebase/controller/user-firebase';
-import { User } from '../models/user.model';
+import { PoV } from '../models/pov.model';
+import { QuerySnapshotCustom } from '../models/snapshot.model';
+import { commentOnPoVFirebase, deletePoVFirebase, getMyPoVsFirebase, likePoVFirebase, savePoVFirebase, uncommentPoVFirebase, unLikePoVFirebase, updatePoVFirebase } from '../firebase/controller/pov-firebase';
+import { PovService } from './pov.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class AccountService {
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
+  // private povService = inject(PovService);
 
   private loadingSignal = signal<boolean>(false);
+  private myPoVsSignal = signal<QuerySnapshotCustom<PoV>>({
+    size: 12,
+    empty: true,
+    content: [],
+    lastVisible: null,
+    last: true
+  });
 
   public readonly loading = computed(() => this.loadingSignal());
-  // The current user account is synced with auth service.
-  public readonly account = this.authService.user;
+  public readonly myPoVs = computed(() => this.myPoVsSignal());
+  public readonly account = this.authService.account();
+  public readonly isAuthenticated = this.authService.isAuthenticated();
 
-  async updateAccount(userData: Partial<User>) {
-    const uid = this.account()?.uid || this.account()?.id;
-    if (!uid) return;
-    if (!this.authService.isAuthenticated()) {
-      this.notificationService.notify("You must be logged in to update your account!", "error");
-      return;
-    }
-
+  async loadMyPoVs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
     this.loadingSignal.set(true);
-    try {
-      const response = await updateUserFirebase(uid, userData);
-      this.authService.updateAccountData(response);
-      this.notificationService.notify("User account updated successfully!", "success");
-      return response;
-    } catch (error: any) {
-      this.notificationService.handleApiError(error);
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
+    if (!this.isAuthenticated || !this.account?.uid) return this.myPoVsSignal();
+
+    return await getMyPoVsFirebase(this.account.uid, { lastVisible })
+      .then(response => {
+        // console.log("myPoVs response: ", response);
+        if (lastVisible) {
+          this.myPoVsSignal.update(povs => ({
+            ...povs,
+            size: response.size,
+            empty: response.empty,
+            content: [...povs.content, ...response.content],
+            lastVisible: response.lastVisible,
+            last: response.last
+          }));
+        } else {
+          this.myPoVsSignal.set(response);
+        }
+        return response;
+      }).catch((error: any) => {
+        this.notificationService.handleApiError(error);
+        return this.myPoVsSignal()
+      }).finally(() => {
+        this.loadingSignal.set(false);
+      })
   }
 
-  async deleteAccount() {
-    const uid = this.account()?.uid || this.account()?.id;
-    if (!uid) return;
-    if (!this.authService.isAuthenticated()) {
-      this.notificationService.notify("You must be logged in to delete your account!", "error");
-      return;
-    }
 
+  async createPov(povData: Partial<PoV>) {
     this.loadingSignal.set(true);
-    try {
-      const response = await deleteUserFirebase(uid);
-      await this.authService.handleSignOut();
-      this.notificationService.notify("User account deleted successfully!", "success");
-      return response;
-    } catch (error: any) {
-      this.notificationService.handleApiError(error);
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
+
+    await savePoVFirebase(povData)
+      .then(response => {
+        // console.log("createPov response: ", response);
+        this.myPoVsSignal.update(povs => ({
+          ...povs,
+          empty: false,
+          content: [response as PoV, ...povs.content],
+          lastVisible: null,
+          last: true
+        }));
+        this.notificationService.notify("PoV created successfully!", "success");
+      }).catch((error: any) => {
+        this.notificationService.handleApiError(error);
+      }).finally(() => {
+        this.loadingSignal.set(false);
+      })
   }
 
-  // Get other user's profile
-  async getUserProfile(userId: string) {
+  async updatePov(povId: string, povData: Partial<PoV>) {
     this.loadingSignal.set(true);
-    try {
-      const userProfile = await getUserFirebase(userId);
-      return userProfile;
-    } catch (error: any) {
-      this.notificationService.handleApiError(error);
-      throw error;
-    } finally {
-      this.loadingSignal.set(false);
-    }
+
+    await updatePoVFirebase(povId, povData)
+      .then(response => {
+        // console.log("updatePov response: ", response);
+        const updateFn = (povs: PoV[]) => {
+          return povs.map(p => {
+            return p.id === povId ? { ...p, ...response } : p
+          })
+        };
+        this.myPoVsSignal.update(povs => ({ ...povs, content: updateFn(povs.content) }));
+        // this.povService.povs.update(povs => ({ ...povs, content: updateFn(povs.content) }));
+        this.notificationService.notify("PoV updated successfully!", "success");
+      }).catch((error: any) => {
+        this.notificationService.handleApiError(error);
+      }).finally(() => {
+        this.loadingSignal.set(false);
+      })
   }
+
+  async deletePov(povId: string) {
+    this.loadingSignal.set(true);
+
+    await deletePoVFirebase(povId)
+      .then(() => {
+        const filterFn = (povs: PoV[]) => povs.filter(p => p.id !== povId);
+        this.myPoVsSignal.update(povs => ({ ...povs, empty: povs.content.length === 0, content: filterFn(povs.content), lastVisible: null, last: true }));
+        // this.povService.povs.update(povs => ({ ...povs, content: filterFn(povs.content) }));
+        this.notificationService.notify(" PoV deleted successfully!", "success");
+      }).catch((error: any) => {
+        this.notificationService.handleApiError(error);
+      }).finally(() => {
+        this.loadingSignal.set(false);
+      })
+  }
+
+  async likePov(povId: string) {
+    this.loadingSignal.set(true);
+    if (!this.account?.id) return;
+
+    await likePoVFirebase(povId, this.account.id).then(response => {
+      // console.log("likePov response: ", response);
+      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
+      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.notificationService.notify("PoV liked!", "success");
+    }).catch((error: any) => {
+      this.notificationService.handleApiError(error);
+    }).finally(() => {
+      this.loadingSignal.set(false);
+    })
+  }
+
+  async unlikePov(povId: string) {
+    this.loadingSignal.set(true);
+    if (!this.account?.id) return;
+    await unLikePoVFirebase(povId, this.account.id).then(response => {
+      // console.log("unlikePov response: ", response);
+      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
+      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.notificationService.notify("PoV unliked!", "success");
+    }).catch((error: any) => {
+      this.notificationService.handleApiError(error);
+    }).finally(() => {
+      this.loadingSignal.set(false);
+    })
+  }
+
+  async commentOnPov(povId: string, commentText: string) {
+    if (!this.account?.id) return;
+    this.loadingSignal.set(true);
+    await commentOnPoVFirebase(povId, this.account, { comment: commentText }).then(response => {
+      // console.log("commentOnPov response: ", response);
+      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
+      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.notificationService.notify("Comment added!", "success");
+    }).catch((error: any) => {
+      this.notificationService.handleApiError(error);
+    }).finally(() => {
+      this.loadingSignal.set(false);
+    })
+  }
+
+  async uncommentPov(povId: string, commentId: string) {
+    this.loadingSignal.set(true);
+    await uncommentPoVFirebase(povId, commentId).then(response => {
+      // console.log("uncommentPov response: ", response);
+      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
+      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.notificationService.notify("Comment removed!", "success");
+    }).catch((error: any) => {
+      this.notificationService.handleApiError(error);
+    }).finally(() => {
+      this.loadingSignal.set(false);
+    })
+  }
+
+
 }

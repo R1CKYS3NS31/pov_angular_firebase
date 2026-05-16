@@ -23,6 +23,7 @@ import {
   type WhereFilterOp,
 } from "firebase/firestore";
 import { firebaseApp } from "./firebase-config";
+import { QuerySnapshotCustom } from "../../models/snapshot.model";
 
 const firestore = getFirestore(firebaseApp);
 
@@ -58,13 +59,7 @@ const firestoreConverter = <T extends DocumentData>(): FirestoreDataConverter<T>
 const getCol = <T extends DocumentData>(name: string) =>
   collection(firestore, name).withConverter(firestoreConverter<T>());
 
-export interface QuerySnapshotCustom<T> {
-  size: number;
-  empty: boolean;
-  content: T[];
-  lastVisible: QueryDocumentSnapshot | null;
-  last: boolean;
-}
+
 
 /**
  * Save data to a collection.

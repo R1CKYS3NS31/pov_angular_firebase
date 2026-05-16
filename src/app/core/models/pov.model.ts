@@ -32,11 +32,3 @@ export interface PoV {
   exists?: boolean;
   isLocal?: boolean;
 }
-
-export interface PoVSnapshot {
-  size: number;
-  empty: boolean;
-  content: PoV[];
-  lastVisible: any; // Firestore document snapshot
-  last: boolean;
-}

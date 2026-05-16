@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { onAuthStateChangedFirebase, signInUserWithEmailAndPassword, signInWithGoogleAuth, signUpUserWithEmailAndPassword } from "../firebase/config/firebase-auth";
-import { getUserFirebase, setUserFirebase } from "../firebase/controller/user-firebase";
+import { deleteUserFirebase, getUserFirebase, setUserFirebase, updateUserFirebase } from "../firebase/controller/user-firebase";
 import { reauthenticateUserFirebase, signOutFirebaseUser, updateUserPasswordFirebase } from "../firebase/config/firebase-auth";
 import { NotificationService } from "./notification.service";
 import type { User as FirebaseUser } from "firebase/auth";
@@ -16,7 +16,8 @@ export class AuthService {
     private loadingSignal = signal<boolean>(true);
     private authLoadingSignal = signal<boolean>(false);
 
-    public readonly user = computed<User | null>(() => this.userSignal());
+    // Todo: confirm that it is account.id not account.uid
+    public readonly account = computed<User | null>(() => this.userSignal());
     public readonly loading = computed<boolean>(() => this.loadingSignal() || this.authLoadingSignal());
     public readonly isAuthenticated = computed<boolean>(() => !!this.userSignal());
 
@@ -162,6 +163,54 @@ export class AuthService {
             })
     }
 
+
+    async updateAccount(userData: Partial<User>) {
+        this.loadingSignal.set(true);
+
+        if (!this.isAuthenticated() || !this.account()?.id) {
+            this.notificationService.notify("You must be logged in to update your account!", "error");
+            this.loadingSignal.set(false);
+            return;
+        }
+
+        await updateUserFirebase(this.account()?.id!, userData)
+            .then(updatedUser => {
+                this.userSignal.update(user => ({
+                    ...user,
+                    ...updatedUser
+                }));
+                this.notificationService.notify("User account updated successfully!", "success");
+                return updatedUser;
+            }).catch(error => {
+                this.notificationService.handleApiError(error);
+                throw error;
+            }).finally(() => {
+                this.loadingSignal.set(false);
+            })
+    }
+
+    async deleteAccount() {
+        this.loadingSignal.set(true);
+        if (!this.isAuthenticated() || !this.account()?.id) {
+            this.notificationService.notify("You must be logged in to delete your account!", "error");
+            return;
+        }
+
+        await deleteUserFirebase(this.account()?.id!)
+            .then(async () => {
+                this.userSignal.set(null);
+                this.notificationService.notify("User account deleted successfully!", "success");
+                await this.handleSignOut();
+            }).catch(error => {
+                this.notificationService.handleApiError(error);
+                throw error;
+            }).finally(() => {
+                this.loadingSignal.set(false);
+            })
+    }
+
+
+
     async handleSignOut() {
         this.authLoadingSignal.set(true);
         await signOutFirebaseUser()
@@ -178,7 +227,7 @@ export class AuthService {
     }
 
     async handleUpdatePassword(currentPassword: string, newPassword: string) {
-        this.authLoadingSignal.set(true);
+        this.loadingSignal.set(true);
         await reauthenticateUserFirebase(currentPassword)
             .then(async () => {
                 await updateUserPasswordFirebase(newPassword);
@@ -187,12 +236,12 @@ export class AuthService {
                 this.notificationService.handleApiError(error);
                 throw error;
             }).finally(() => {
-                this.authLoadingSignal.set(false);
+                this.loadingSignal.set(false);
             })
     }
 
     // async handlePasswordReset(email: string) {
-    //     this.authLoadingSignal.set(true);
+    //     this.loadingSignal.set(true);
     //     await sendPasswordResetEmailFirebase(email)
     //         .then(() => {
     //             this.notificationService.notify("Password reset email sent successfully!", "success");
@@ -200,7 +249,7 @@ export class AuthService {
     //             this.notificationService.handleApiError(error);
     //             throw error;
     //         }).finally(() => {
-    //             this.authLoadingSignal.set(false);
+    //             this.loadingSignal.set(false);
     //         })
     // }
 }
