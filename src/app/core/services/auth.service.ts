@@ -22,11 +22,13 @@ export class AuthService {
 
     constructor() {
         onAuthStateChangedFirebase(async (currentUser: FirebaseUser | null) => {
+            this.loadingSignal.set(true);
+            // console.log("AuthState - currentUser", currentUser);
             if (currentUser) {
                 await getUserFirebase(currentUser.uid)
                     .then((userFirestore) => {
                         this.userSignal.set(userFirestore);
-                        // console.log(userFirestore);
+                        // console.log("AuthState - userFirestore", userFirestore);
                     })
                     .catch((error) => {
                         this.notificationService.handleApiError(error);
@@ -42,120 +44,163 @@ export class AuthService {
         });
     }
 
-    public updateAccountData(user: User) {
-        this.userSignal.set(user);
-    }
-
     async handleSignUp(userData: any) {
         const { email, password, name, description } = userData;
         const displayName = `${name?.first || ""} ${name?.last || ""}`.trim();
         this.authLoadingSignal.set(true);
 
-        try {
-            const firebaseUser = await signUpUserWithEmailAndPassword(
-                email,
-                password,
-                displayName,
-                ""
-            );
 
-            const userFirestore = await setUserFirebase({
-                uid: firebaseUser.uid,
-                email: firebaseUser.email || "",
-                displayName: firebaseUser.displayName || displayName,
-                displayPicture: firebaseUser.photoURL || "",
+        return await signUpUserWithEmailAndPassword(
+            email,
+            password,
+            displayName,
+            ""
+        ).then(async firebaseUser => {
+            // console.log(" SignUp - firebaseUser", firebaseUser)
+            return await setUserFirebase({
+                uid: firebaseUser?.uid,
+                email: firebaseUser?.email || "",
+                displayName: firebaseUser?.displayName || displayName,
+                displayPicture: firebaseUser?.photoURL || "",
                 name: {
-                    first: name?.first || firebaseUser.displayName?.split(" ")[0] || "",
-                    last: name?.last || firebaseUser.displayName?.split(" ").slice(1).join(" ") || "",
+                    first: name?.first || firebaseUser?.displayName?.split(" ")[0] || "",
+                    last: name?.last || firebaseUser?.displayName?.split(" ").slice(1).join(" ") || "",
                 },
                 description: description || "",
-            });
-
-            this.userSignal.set(userFirestore);
-            this.notificationService.notify("Account created and signed in successfully!", "success");
-            return userFirestore;
-        } catch (error: any) {
+            }).then(userFirestore => {
+                // console.log(" SignUp - userFirestore", userFirestore)
+                this.userSignal.set(userFirestore);
+                this.notificationService.notify("Account created and signed in successfully!", "success");
+                return userFirestore;
+            }).catch(error => {
+                this.notificationService.handleApiError(error);
+                throw error;
+            }).finally(() => {
+                this.authLoadingSignal.set(false);
+            })
+        }).catch(error => {
             this.notificationService.handleApiError(error);
             throw error;
-        } finally {
+        }).finally(() => {
             this.authLoadingSignal.set(false);
-        }
+        })
     }
 
     async handleSignIn(email: string, password: string) {
         this.authLoadingSignal.set(true);
-        try {
-            const firebaseUser = await signInUserWithEmailAndPassword(email, password);
-            const userFirestore = await getUserFirebase(firebaseUser.uid);
-            this.userSignal.set(userFirestore);
-            this.notificationService.notify("Signed in successfully!", "success");
-            return userFirestore;
-        } catch (error: any) {
-            this.notificationService.handleApiError(error);
-            throw error;
-        } finally {
-            this.authLoadingSignal.set(false);
-        }
+        return await signInUserWithEmailAndPassword(email, password)
+            .then(async firebaseUser => {
+                // console.log(" SignIn - firebaseUser", firebaseUser)
+                return await getUserFirebase(firebaseUser.uid)
+                    .then(userFirestore => {
+                        // console.log(" SignIn - userFirestore", userFirestore)
+                        this.userSignal.set(userFirestore);
+                        this.notificationService.notify("Signed in successfully!", "success");
+                        return userFirestore;
+                    }).catch(error => {
+                        this.notificationService.handleApiError(error);
+                        throw error;
+                    }).finally(() => {
+                        this.authLoadingSignal.set(false);
+                    })
+            }).catch(error => {
+                this.notificationService.handleApiError(error);
+                throw error;
+            }).finally(() => {
+                this.authLoadingSignal.set(false);
+            })
+
     }
 
     async handleGoogleSignIn() {
         this.authLoadingSignal.set(true);
-        try {
-            const { user: firebaseUser, isNewUser } = await signInWithGoogleAuth();
-            if (isNewUser) {
-                const userFirestore = await setUserFirebase({
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email || "",
-                    displayName: firebaseUser.displayName || "",
-                    displayPicture: firebaseUser.photoURL || "",
-                    name: {
-                        first: firebaseUser.displayName?.split(" ")[0] || "",
-                        last: firebaseUser.displayName?.split(" ").slice(1).join(" ") || "",
-                    },
-                    description: "",
-                });
-                this.userSignal.set(userFirestore);
-                this.notificationService.notify("Account created and signed in successfully!", "success");
-                return userFirestore;
-            }
 
-            const userFirestore = await getUserFirebase(firebaseUser.uid);
-            this.userSignal.set(userFirestore);
-            this.notificationService.notify("Signed in successfully!", "success");
-            return userFirestore;
-        } catch (error: any) {
-            this.notificationService.handleApiError(error);
-            throw error;
-        } finally {
-            this.authLoadingSignal.set(false);
-        }
+        await signInWithGoogleAuth()
+            .then(async ({ user, isNewUser }) => {
+                // console.log(" Google sign in - user and isNewUser", user, isNewUser)
+                if (isNewUser) {
+                    return await setUserFirebase({
+                        uid: user.uid,
+                        email: user.email || "",
+                        displayName: user.displayName || "",
+                        displayPicture: user.photoURL || "",
+                        name: {
+                            first: user.displayName?.split(" ")[0] || "",
+                            last: user.displayName?.split(" ").slice(1).join(" ") || "",
+                        },
+                        description: "",
+                    }).then(userFirestore => {
+                        // console.log(" Google sign in - userFirestore", userFirestore)
+                        this.userSignal.set(userFirestore);
+                        this.notificationService.notify("Account created and signed in successfully!", "success");
+                        return userFirestore;
+                    }).catch(error => {
+                        this.notificationService.handleApiError(error);
+                        throw error;
+                    }).finally(() => {
+                        this.authLoadingSignal.set(false);
+                    })
+                }
+
+                return await getUserFirebase(user.uid)
+                    .then(async userFirestore => {
+                        // console.log(" Google sign in - userFirestore", userFirestore)
+                        this.userSignal.set(userFirestore);
+                        this.notificationService.notify("Signed in successfully!", "success");
+                        return userFirestore;
+                    }).catch(error => {
+                        this.notificationService.handleApiError(error);
+                        throw error;
+                    }).finally(() => {
+                        this.authLoadingSignal.set(false);
+                    })
+            }).catch(error => {
+                this.notificationService.handleApiError(error);
+                throw error;
+            }).finally(() => {
+                this.authLoadingSignal.set(false);
+            })
     }
 
     async handleSignOut() {
         this.authLoadingSignal.set(true);
-        try {
-            await signOutFirebaseUser();
-            this.userSignal.set(null);
-            this.notificationService.notify("User account signed out successfully!", "success");
-        } catch (error: any) {
-            this.notificationService.handleApiError(error);
-            throw error;
-        } finally {
-            this.authLoadingSignal.set(false);
-        }
+        await signOutFirebaseUser()
+            .then(() => {
+                this.userSignal.set(null);
+                this.notificationService.notify("User account signed out successfully!", "success");
+            })
+            .catch(error => {
+                this.notificationService.handleApiError(error);
+                throw error;
+            }).finally(() => {
+                this.authLoadingSignal.set(false);
+            })
     }
 
     async handleUpdatePassword(currentPassword: string, newPassword: string) {
         this.authLoadingSignal.set(true);
-        try {
-            await reauthenticateUserFirebase(currentPassword);
-            await updateUserPasswordFirebase(newPassword);
-            this.notificationService.notify("Password updated successfully!", "success");
-        } catch (error: any) {
-            this.notificationService.handleApiError(error);
-            throw error;
-        } finally {
-            this.authLoadingSignal.set(false);
-        }
+        await reauthenticateUserFirebase(currentPassword)
+            .then(async () => {
+                await updateUserPasswordFirebase(newPassword);
+                this.notificationService.notify("Password updated successfully!", "success");
+            }).catch(error => {
+                this.notificationService.handleApiError(error);
+                throw error;
+            }).finally(() => {
+                this.authLoadingSignal.set(false);
+            })
     }
+
+    // async handlePasswordReset(email: string) {
+    //     this.authLoadingSignal.set(true);
+    //     await sendPasswordResetEmailFirebase(email)
+    //         .then(() => {
+    //             this.notificationService.notify("Password reset email sent successfully!", "success");
+    //         }).catch(error => {
+    //             this.notificationService.handleApiError(error);
+    //             throw error;
+    //         }).finally(() => {
+    //             this.authLoadingSignal.set(false);
+    //         })
+    // }
 }
