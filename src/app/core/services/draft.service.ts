@@ -23,28 +23,26 @@ export class DraftService {
 
     // Auto-save to localStorage whenever draftsSignal changes
     effect(() => {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.draftsSignal()));
+      const state = this.draftsSignal();
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify({ ...state, lastVisible: null, last: true }));
     });
   }
 
   private loadDrafts() {
     const savedDrafts = localStorage.getItem(this.STORAGE_KEY);
-    if (savedDrafts) {
-      try {
-        this.draftsSignal.set(JSON.parse(savedDrafts));
-      } catch (e) {
-        console.error('Failed to parse local drafts', e);
-        this.draftsSignal()
-      }
+    if (!savedDrafts) return;
+
+    try {
+      this.draftsSignal.set(JSON.parse(savedDrafts));
+    } catch (e) {
+      console.error('Failed to parse local drafts', e);
+      this.clearAllDrafts();
     }
   }
 
   saveDraft(povData: Partial<PoV>) {
-    const drafts = this.draftsSignal();
     const id = povData.id || `local_${Date.now()}`;
     const timestamp = new Date().toISOString();
-
-
 
     this.draftsSignal.update(currentDrafts => {
       const existingIndex = currentDrafts.content.findIndex(d => d.id === id);
@@ -66,7 +64,7 @@ export class DraftService {
           createdAt: timestamp,
           updatedAt: timestamp
         } as PoV;
-        updatedDraftsContent = [...currentDrafts.content, newDraft];
+        updatedDraftsContent.unshift(newDraft);
       }
       return {
         ...currentDrafts,
@@ -124,6 +122,8 @@ export class DraftService {
   }
 
   clearAllDrafts() {
+    localStorage.removeItem(this.STORAGE_KEY);
+
     this.draftsSignal.set({
       size: 12,
       empty: true,
