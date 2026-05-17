@@ -6,12 +6,12 @@ import {
   setDocData,
   loadDocsDataWhere,
   updateDocData,
-  type QuerySnapshotCustom,
 } from "../config/firebase-firestore";
 import { getUserFirebase } from "./user-firebase";
 import { type PoV, type PoVComment } from "../../models/pov.model";
 import { type User } from "../../models/user.model";
 import { type OrderByDirection } from "firebase/firestore";
+import { type QuerySnapshotCustom } from "../../models/snapshot.model";
 
 const collectionName = "povs";
 
