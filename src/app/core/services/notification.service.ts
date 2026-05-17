@@ -26,7 +26,6 @@ export class NotificationService {
     let isAuthError = false;
 
     if (err?.code) {
-      // Firebase specific errors
       switch(err.code) {
         case 'auth/user-not-found':
         case 'auth/wrong-password':

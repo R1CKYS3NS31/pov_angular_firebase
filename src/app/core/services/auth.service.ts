@@ -3,8 +3,8 @@ import { onAuthStateChangedFirebase, signInUserWithEmailAndPassword, signInWithG
 import { deleteUserFirebase, getUserFirebase, setUserFirebase, updateUserFirebase } from "../firebase/controller/user-firebase";
 import { reauthenticateUserFirebase, signOutFirebaseUser, updateUserPasswordFirebase } from "../firebase/config/firebase-auth";
 import { NotificationService } from "./notification.service";
-import type { User as FirebaseUser } from "firebase/auth";
-import type { User } from "../models/user.model";
+import { type User as FirebaseUser } from "firebase/auth";
+import { type User } from "../models/user.model";
 
 @Injectable({
     providedIn: 'root'

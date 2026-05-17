@@ -1,8 +1,8 @@
 import { Injectable, inject, signal, computed, effect, untracked } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { AuthService } from './auth.service';
-import { PoV } from '../models/pov.model';
-import { QuerySnapshotCustom } from '../models/snapshot.model';
+import { type PoV } from '../models/pov.model';
+import { type QuerySnapshotCustom } from '../models/snapshot.model';
 import { commentOnPoVFirebase, deletePoVFirebase, getMyPoVsFirebase, likePoVFirebase, savePoVFirebase, uncommentPoVFirebase, unLikePoVFirebase, updatePoVFirebase } from '../firebase/controller/pov-firebase';
 
 @Injectable({

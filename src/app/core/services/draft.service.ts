@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
-import { PoV } from '../models/pov.model';
-import { QuerySnapshotCustom } from '../models/snapshot.model';
+import { type PoV } from '../models/pov.model';
+import { type QuerySnapshotCustom } from '../models/snapshot.model';
 
 @Injectable({
   providedIn: 'root'
