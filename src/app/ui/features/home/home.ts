@@ -6,7 +6,6 @@ import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
   imports: [MatButtonModule, MatIconModule, MatCardModule],
   templateUrl: './home.html',
   styleUrl: './home.scss',
