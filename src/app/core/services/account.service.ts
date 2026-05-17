@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { AuthService } from './auth.service';
 import { PoV } from '../models/pov.model';
@@ -27,6 +27,15 @@ export class AccountService {
   public readonly myPoVs = computed(() => this.myPoVsSignal());
   public readonly account = this.authService.account();
   public readonly isAuthenticated = this.authService.isAuthenticated();
+
+  constructor() {
+    effect(async () => {
+      if (this.isAuthenticated) {
+        await this.getMyPoVs();
+        // console.log("account effect triggered: ", this.myPoVs());
+      }
+    });
+  }
 
   async getMyPoVs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
     this.loadingSignal.set(true);
