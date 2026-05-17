@@ -33,15 +33,15 @@ export class AuthService {
     public readonly isAuthenticated = computed<boolean>(() => this.isAuthenticatedSignal());
 
     constructor() {
-        onAuthStateChangedFirebase( async (currentUser: FirebaseUser | null) => {
-             this.loadingSignal.set(true);
+        this.loadingSignal.set(true);
+
+        onAuthStateChangedFirebase(async (currentUser: FirebaseUser | null) => {
             // console.log("AuthState - currentUser", currentUser);
             if (currentUser) {
                 await getUserFirebase(currentUser.uid)
                     .then((userFirestore) => {
-                        this.userSignal.set(userFirestore);
+                        this.userSignal.set({ ...userFirestore, id: currentUser.uid });
                         this.isAuthenticatedSignal.set(true);
-                        // this.notificationService.notify("Still Signed in successfully!", "success");
                         // console.log("AuthState - userFirestore", userFirestore);
                     })
                     .catch((error) => {
@@ -83,6 +83,7 @@ export class AuthService {
             }).then(userFirestore => {
                 // console.log(" SignUp - userFirestore", userFirestore)
                 this.userSignal.set(userFirestore);
+                this.isAuthenticatedSignal.set(true);
                 this.notificationService.notify("Account created and signed in successfully!", "success");
                 return userFirestore;
             }).catch(error => {
@@ -108,6 +109,7 @@ export class AuthService {
                     .then(userFirestore => {
                         // console.log(" SignIn - userFirestore", userFirestore)
                         this.userSignal.set(userFirestore);
+                        this.isAuthenticatedSignal.set(true);
                         this.notificationService.notify("Signed in successfully!", "success");
                         return userFirestore;
                     }).catch(error => {
@@ -175,17 +177,16 @@ export class AuthService {
             })
     }
 
-
     async updateAccount(userData: Partial<User>) {
-        this.loadingSignal.set(true);
+        const account = this.account();
 
-        if (!this.isAuthenticated() || !this.account()?.id) {
+        if (!this.isAuthenticated() || !account?.id) {
             this.notificationService.notify("You must be logged in to update your account!", "error");
-            this.loadingSignal.set(false);
             return;
         }
 
-        await updateUserFirebase(this.account()?.id!, userData)
+        this.loadingSignal.set(true);
+        return await updateUserFirebase(account.id, userData)
             .then(updatedUser => {
                 // console.log("updateAccount response: ", updatedUser);
                 this.userSignal.update(user => ({
@@ -203,17 +204,18 @@ export class AuthService {
     }
 
     async deleteAccount() {
-        this.loadingSignal.set(true);
-        if (!this.isAuthenticated() || !this.account()?.id) {
+        const account = this.account();
+
+        if (!this.isAuthenticated() || !account?.id) {
             this.notificationService.notify("You must be logged in to delete your account!", "error");
             return;
         }
 
-        await deleteUserFirebase(this.account()?.id!)
+        this.loadingSignal.set(true);
+        return await deleteUserFirebase(account.id)
             .then(async () => {
-                this.userSignal();
-                this.notificationService.notify("User account deleted successfully!", "success");
                 await this.handleSignOut();
+                this.notificationService.notify("User account deleted successfully!", "success");
             }).catch(error => {
                 this.notificationService.handleApiError(error);
                 throw error;
@@ -222,13 +224,24 @@ export class AuthService {
             })
     }
 
-
-
     async handleSignOut() {
         this.loadingSignal.set(true);
+
         await signOutFirebaseUser()
             .then(() => {
-                this.userSignal();
+                this.userSignal.set({
+                    id: "",
+                    name: {
+                        first: "Guest",
+                        last: "User",
+                        full: "Guest User"
+                    },
+                    displayName: "Guest User",
+                    email: "",
+                    displayPicture: "",
+                    description: "I am a new PoV supporter ready to explore different perspectives!",
+                });
+                this.isAuthenticatedSignal.set(false);
                 this.notificationService.notify("User account signed out successfully!", "success");
             })
             .catch(error => {

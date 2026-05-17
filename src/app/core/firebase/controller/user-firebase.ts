@@ -4,9 +4,9 @@ import {
   loadDocsData,
   setDocData,
   updateDocData,
-  saveDocData,
-  type QuerySnapshotCustom,
+  saveDocData
 } from "../config/firebase-firestore";
+import { type QuerySnapshotCustom } from "../../models/snapshot.model";
 import { type User } from "../../models/user.model";
 
 const collectionName = "users";
@@ -15,7 +15,7 @@ const collectionName = "users";
  * Create a new user with generated ID.
  */
 export const saveUserFirebase = async (user: Partial<User> = {}): Promise<User> => {
-  const { displayName, name, email, displayPicture, isUser } = user;
+  const { displayName, name, email, displayPicture } = user;
 
   const userData = {
     name: {
@@ -26,7 +26,6 @@ export const saveUserFirebase = async (user: Partial<User> = {}): Promise<User> 
     email: email || "",
     description: user.description || "",
     displayPicture: displayPicture || "",
-    isUser: isUser ?? true,
   };
 
   return await saveDocData(collectionName, "", userData)
@@ -41,7 +40,7 @@ export const saveUserFirebase = async (user: Partial<User> = {}): Promise<User> 
  * Create or overwrite user with specific UID.
  */
 export const setUserFirebase = async (user: Partial<User> & { uid: string }): Promise<User> => {
-  const { uid, displayName, name, email, displayPicture, isUser } = user;
+  const { uid, displayName, name, email, displayPicture } = user;
 
   if (!uid)
     return Promise.reject(new Error("UID is required for setUserFirebase"));
@@ -55,7 +54,6 @@ export const setUserFirebase = async (user: Partial<User> & { uid: string }): Pr
     email: email || "",
     description: user.description || "",
     displayPicture: displayPicture || "",
-    isUser: isUser ?? true,
   };
 
   return await setDocData(collectionName, uid, userData)

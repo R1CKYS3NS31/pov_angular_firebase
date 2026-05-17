@@ -1,10 +1,9 @@
-import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { Injectable, inject, signal, computed, effect, untracked } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { AuthService } from './auth.service';
 import { PoV } from '../models/pov.model';
 import { QuerySnapshotCustom } from '../models/snapshot.model';
 import { commentOnPoVFirebase, deletePoVFirebase, getMyPoVsFirebase, likePoVFirebase, savePoVFirebase, uncommentPoVFirebase, unLikePoVFirebase, updatePoVFirebase } from '../firebase/controller/pov-firebase';
-import { PovService } from './pov.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +11,6 @@ import { PovService } from './pov.service';
 export class AccountService {
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
-  // private povService = inject(PovService);
 
   private loadingSignal = signal<boolean>(false);
   private myPoVsSignal = signal<QuerySnapshotCustom<PoV>>({
@@ -25,39 +23,39 @@ export class AccountService {
 
   public readonly loading = computed(() => this.loadingSignal());
   public readonly myPoVs = computed(() => this.myPoVsSignal());
-  public readonly account = this.authService.account();
-  public readonly isAuthenticated = this.authService.isAuthenticated();
+
+  public readonly account = computed(() => this.authService.account());
+  public readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
 
   constructor() {
-    effect(async () => {
-      if (this.isAuthenticated) {
-        await this.getMyPoVs();
-        // console.log("account effect triggered: ", this.myPoVs());
-      }
+    effect(() => {
+      const loggedin = this.isAuthenticated();
+      const account = this.account();
+      // console.log("account effect triggered: ", loggedin,account);
+      if (loggedin && account?.id) untracked(() => this.getMyPoVs());
     });
   }
 
   async getMyPoVs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
-    this.loadingSignal.set(true);
-    if (!this.isAuthenticated || !this.account?.uid) return this.myPoVsSignal();
+    const account = this.account();
+    if (!this.isAuthenticated() || !account?.id) return this.myPoVsSignal();
 
-    return await getMyPoVsFirebase(this.account.uid, { lastVisible })
+    this.loadingSignal.set(true);
+    return await getMyPoVsFirebase(account.id, { lastVisible })
       .then(response => {
         // console.log("myPoVs response: ", response);
-        if (lastVisible) {
-          this.myPoVsSignal.update(povs => ({
+
+        this.myPoVsSignal.update(povs => {
+          const mergedContent = lastVisible ? [...povs.content, ...response.content] : [...response.content];
+          return {
             ...povs,
             size: response.size,
-            empty: response.empty,
-            content: [...povs.content, ...response.content],
+            empty: mergedContent.length === 0,
+            content: mergedContent,
             lastVisible: response.lastVisible,
             last: response.last
-          }));
-          // this.notificationService.notify("My PoVs loaded successfully!", "success");
-        } else {
-          this.myPoVsSignal.set(response);
-          // this.notificationService.notify("My PoVs loaded successfully!", "success");
-        }
+          };
+        });
         return response;
       }).catch((error: any) => {
         this.notificationService.handleApiError(error);
@@ -67,10 +65,11 @@ export class AccountService {
       })
   }
 
-
   async createPov(povData: Partial<PoV>) {
-    this.loadingSignal.set(true);
+    const account = this.account();
+    if (!account?.id) return;
 
+    this.loadingSignal.set(true);
     await savePoVFirebase(povData)
       .then(response => {
         // console.log("createPov response: ", response);
@@ -78,8 +77,6 @@ export class AccountService {
           ...povs,
           empty: false,
           content: [response as PoV, ...povs.content],
-          lastVisible: null,
-          last: true
         }));
         this.notificationService.notify("PoV created successfully!", "success");
       }).catch((error: any) => {
@@ -90,18 +87,17 @@ export class AccountService {
   }
 
   async updatePov(povId: string, povData: Partial<PoV>) {
-    this.loadingSignal.set(true);
+    const account = this.account();
+    if (!account?.id) return;
 
+    this.loadingSignal.set(true);
     await updatePoVFirebase(povId, povData)
       .then(response => {
         // console.log("updatePov response: ", response);
-        const updateFn = (povs: PoV[]) => {
-          return povs.map(p => {
-            return p.id === povId ? { ...p, ...response } : p
-          })
-        };
-        this.myPoVsSignal.update(povs => ({ ...povs, content: updateFn(povs.content) }));
-        // this.povService.povs.update(povs => ({ ...povs, content: updateFn(povs.content) }));
+        this.myPoVsSignal.update(povs => ({
+          ...povs,
+          content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+        }));
         this.notificationService.notify("PoV updated successfully!", "success");
       }).catch((error: any) => {
         this.notificationService.handleApiError(error);
@@ -111,14 +107,22 @@ export class AccountService {
   }
 
   async deletePov(povId: string) {
+    const account = this.account();
+    if (!account?.id) return;
+
     this.loadingSignal.set(true);
 
     await deletePoVFirebase(povId)
       .then(() => {
-        const filterFn = (povs: PoV[]) => povs.filter(p => p.id !== povId);
-        this.myPoVsSignal.update(povs => ({ ...povs, empty: povs.content.length === 0, content: filterFn(povs.content), lastVisible: null, last: true }));
-        // this.povService.povs.update(povs => ({ ...povs, content: filterFn(povs.content) }));
-        this.notificationService.notify(" PoV deleted successfully!", "success");
+        this.myPoVsSignal.update(povs => {
+          const updatedContent = povs.content.filter(p => p.id !== povId);
+          return {
+            ...povs,
+            content: updatedContent,
+            empty: updatedContent.length === 0
+          }
+        });
+        this.notificationService.notify("PoV deleted successfully!", "success");
       }).catch((error: any) => {
         this.notificationService.handleApiError(error);
       }).finally(() => {
@@ -127,13 +131,15 @@ export class AccountService {
   }
 
   async likePov(povId: string) {
-    this.loadingSignal.set(true);
-    if (!this.account?.id) return;
+    if (!this.account()?.id) return;
 
-    await likePoVFirebase(povId, this.account.id).then(response => {
+    this.loadingSignal.set(true);
+    await likePoVFirebase(povId, this.account()!.id).then(response => {
       // console.log("likePov response: ", response);
-      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
-      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.myPoVsSignal.update(povs => ({
+        ...povs,
+        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+      }));
       this.notificationService.notify("PoV liked!", "success");
     }).catch((error: any) => {
       this.notificationService.handleApiError(error);
@@ -143,12 +149,15 @@ export class AccountService {
   }
 
   async unlikePov(povId: string) {
+    if (!this.account()?.id) return;
+
     this.loadingSignal.set(true);
-    if (!this.account?.id) return;
-    await unLikePoVFirebase(povId, this.account.id).then(response => {
+    await unLikePoVFirebase(povId, this.account()!.id).then(response => {
       // console.log("unlikePov response: ", response);
-      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
-      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.myPoVsSignal.update(povs => ({
+        ...povs,
+        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+      }));
       this.notificationService.notify("PoV unliked!", "success");
     }).catch((error: any) => {
       this.notificationService.handleApiError(error);
@@ -158,12 +167,16 @@ export class AccountService {
   }
 
   async commentOnPov(povId: string, commentText: string) {
-    if (!this.account?.id) return;
+    const account = this.account();
+    if (!account?.id) return;
+
     this.loadingSignal.set(true);
-    await commentOnPoVFirebase(povId, this.account, { comment: commentText }).then(response => {
+    await commentOnPoVFirebase(povId, account, { comment: commentText }).then(response => {
       // console.log("commentOnPov response: ", response);
-      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
-      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.myPoVsSignal.update(povs => ({
+        ...povs,
+        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+      }));
       this.notificationService.notify("Comment added!", "success");
     }).catch((error: any) => {
       this.notificationService.handleApiError(error);
@@ -173,11 +186,16 @@ export class AccountService {
   }
 
   async uncommentPov(povId: string, commentId: string) {
+    const account = this.account();
+    if (!account?.id) return;
+
     this.loadingSignal.set(true);
     await uncommentPoVFirebase(povId, commentId).then(response => {
       // console.log("uncommentPov response: ", response);
-      const updateFn = (povs: PoV[]) => povs.map(p => p.id === povId ? { ...p, ...response } : p);
-      this.myPoVsSignal.update(myPoVs => ({ ...myPoVs, content: updateFn(myPoVs.content)}));
+      this.myPoVsSignal.update(povs => ({
+        ...povs,
+        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+      }));
       this.notificationService.notify("Comment removed!", "success");
     }).catch((error: any) => {
       this.notificationService.handleApiError(error);
@@ -185,6 +203,4 @@ export class AccountService {
       this.loadingSignal.set(false);
     })
   }
-
-
 }

@@ -63,6 +63,8 @@ export class PovService {
     this.loadingSignal.set(true);
     return await getPoVsByAuthorFirebase(authorId, { lastVisible })
       .then(response => {
+        // console.log("getPovsByAuthor response: ", response);
+
         if (lastVisible) {
           this.povsByAuthorSignal.update(povs => ({
             ...povs,
