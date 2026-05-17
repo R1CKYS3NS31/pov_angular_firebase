@@ -31,25 +31,32 @@ export class PovService {
   public readonly povs = computed(() => this.povsSignal());
   public readonly povsByAuthor = computed(() => this.povsByAuthorSignal());
 
+constructor(){
+  this.loadPublishedPoVs();
+}
+
+private loadPublishedPoVs(){
+  this.getPovs();
+}
+
   async getPovs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
     this.loadingSignal.set(true);
+
     return await getPoVsPublishedFirebase({ lastVisible })
       .then(response => {
         // console.log("getPovs response: ", response);
-        if (lastVisible) {
-          this.povsSignal.update(povs => ({
-            ...povs,
-            size: response.size,
-            empty: response.empty,
-            content: [...povs.content, ...response.content],
-            lastVisible: response.lastVisible,
-            last: response.last
-          }));
+
+          this.povsSignal.update(povs => {
+            const mergedContent = lastVisible ? [...povs.content, ...response.content] : [...response.content];
+            return {
+              ...povs,
+              empty: mergedContent.length === 0,
+              content: mergedContent,
+              lastVisible: response.lastVisible,
+              last: response.last
+            }
+          });
           // this.notificationService.notify("PoVs loaded successfully!", "success");
-        } else {
-          this.povsSignal.set(response);
-          // this.notificationService.notify("PoVs loaded successfully!", "success");
-        }
         return response;
       }).catch((error: any) => {
         this.notificationService.handleApiError(error);
@@ -60,23 +67,22 @@ export class PovService {
   }
 
   async getPoVsByAuthor(authorId: string, lastVisible: any = null) {
+
     this.loadingSignal.set(true);
     return await getPoVsByAuthorFirebase(authorId, { lastVisible })
       .then(response => {
         // console.log("getPovsByAuthor response: ", response);
 
-        if (lastVisible) {
-          this.povsByAuthorSignal.update(povs => ({
+          this.povsByAuthorSignal.update(povs => {
+            const mergedContent = lastVisible ? [...povs.content, ...response.content] : [...response.content];
+            return {
             ...povs,
-            size: response.size,
-            empty: response.empty,
-            content: [...povs.content, ...response.content],
+            empty: mergedContent.length === 0,
+            content: mergedContent,
             lastVisible: response.lastVisible,
             last: response.last
-          }));
-        } else {
-          this.povsByAuthorSignal.set(response);
-        }
+          }});
+          
         return response;
       }).catch((error: any) => {
         this.notificationService.handleApiError(error);
