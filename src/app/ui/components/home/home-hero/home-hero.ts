@@ -7,9 +7,9 @@ import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-home-hero',
-  standalone: true,
   imports: [RouterLink, MatButtonModule, MatIconModule, MatChipsModule],
   templateUrl: './home-hero.html',
   styleUrls: ['./home-hero.scss'],
 })
 export class HomeHero {}
+

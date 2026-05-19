@@ -1,11 +1,11 @@
-import { Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, input, Input, Output } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-account-pov-tabs',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatTabsModule, MatIconModule, MatChipsModule],
   templateUrl: './account-pov-tabs.html',
   styleUrls: ['./account-pov-tabs.scss'],
@@ -22,3 +22,4 @@ export class AccountPovTabs {
     this.tabChange.emit(index);
   }
 }
+

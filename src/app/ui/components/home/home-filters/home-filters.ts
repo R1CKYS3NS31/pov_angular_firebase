@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -10,24 +10,23 @@ import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home-filters',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatIconModule],
   templateUrl: './home-filters.html',
   styleUrls: ['./home-filters.scss'],
 })
-export class HomeFilters {
+export class HomeFilters implements OnDestroy {
   @Input() sortBy: string = 'createdAt';
 
   @Output() search = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<string>();
 
   searchSubject = new Subject<string>();
+  private searchSubscription = this.searchSubject.pipe(debounceTime(300)).subscribe((query) => {
+    this.search.emit(query);
+  });
 
-  constructor() {
-    this.searchSubject.pipe(debounceTime(300)).subscribe((query) => {
-      this.search.emit(query);
-    });
-  }
+  constructor() {}
 
   onSearchChange(event: Event) {
     const query = (event.target as HTMLInputElement).value;
@@ -37,4 +36,9 @@ export class HomeFilters {
   onSortSelect(value: string) {
     this.sortChange.emit(value);
   }
+
+  ngOnDestroy() {
+    this.searchSubscription.unsubscribe();
+  }
 }
+

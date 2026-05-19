@@ -13,7 +13,6 @@ import { AccountService } from '@core/services/account.service';
 
 @Component({
   selector: 'app-pov-dialog',
-  standalone: true,
   imports: [MatDialogModule, MatButtonModule, MatIconModule, PovForm],
   templateUrl: './pov-dialog.html',
   styleUrls: ['./pov-dialog.scss'],
@@ -100,3 +99,4 @@ export class PovDialog {
     this.dialogRef.close();
   }
 }
+

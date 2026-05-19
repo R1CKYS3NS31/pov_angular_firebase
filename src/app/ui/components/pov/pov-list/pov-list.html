@@ -34,7 +34,7 @@
 @if (!loading && povs && !povs.empty) {
   <div class="list-container">
     <div class="pov-items">
-      @for (pov of povs.content; track pov) {
+      @for (pov of povs.content; track pov.id) {
         <app-pov-card [pov]="pov" (edit)="edit.emit($event)" (delete)="delete.emit($event)">
         </app-pov-card>
       }

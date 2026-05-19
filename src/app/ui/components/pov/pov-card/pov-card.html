@@ -63,9 +63,9 @@
  
         @if (pointsArray.length > 0) {
           <div class="pov-points">
-            @for (point of pointsArray; track point) {
+            @for (point of pointsArray; track point.id) {
               <div class="point-item">
-                {{ point }}
+                {{ point.text }}
               </div>
             }
           </div>

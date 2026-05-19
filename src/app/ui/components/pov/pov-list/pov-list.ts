@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   EventEmitter,
@@ -15,7 +16,7 @@ import { PoV } from '@core/models/pov.model';
 
 @Component({
   selector: 'app-pov-list',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PovCard, MatProgressSpinnerModule],
   templateUrl: './pov-list.html',
   styleUrls: ['./pov-list.scss'],
@@ -59,3 +60,4 @@ export class PovList implements AfterViewInit, OnDestroy {
   // Create an array for the skeleton loaders
   skeletonArray = [1, 2, 3];
 }
+

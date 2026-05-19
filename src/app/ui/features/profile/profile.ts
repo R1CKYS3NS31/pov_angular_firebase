@@ -12,7 +12,6 @@ import { PoV } from '@core/models/pov.model';
 
 @Component({
   selector: 'app-profile',
-  standalone: true,
   imports: [MatButtonModule, MatIconModule, MatProgressSpinnerModule, PovList],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss'],
@@ -71,3 +70,4 @@ export class Profile implements OnInit {
     this.location.back();
   }
 }
+

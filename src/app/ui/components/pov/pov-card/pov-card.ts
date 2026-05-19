@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +18,7 @@ import { AccountService } from '@core/services/account.service';
 
 @Component({
   selector: 'app-pov-card',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatCardModule,
     MatButtonModule,
@@ -58,7 +58,7 @@ export class PovCard {
   }
 
   get isAuthor() {
-    return this.authService.isAuthenticated() && this.authService.account()?.uid === this.authorId;
+    return this.authService.isAuthenticated() && this.authService.account()?.id === this.authorId;
   }
 
   get authorName() {
@@ -74,13 +74,23 @@ export class PovCard {
   }
 
   get hasLiked() {
-    return this.pov?.likes?.includes(this.authService.account()?.uid as string);
+    return this.pov?.likes?.includes(this.authService.account()?.id as string);
   }
 
-  get pointsArray(): string[] {
-    if (Array.isArray(this.pov?.points)) return this.pov.points;
-    if (typeof this.pov?.points === 'string')
-      return this.pov.points.split('\n').filter((p) => p.trim());
+  get pointsArray(): Array<{ id: string; text: string }> {
+    if (Array.isArray(this.pov?.points)) {
+      return this.pov.points
+        .map((point, index) => ({ id: `${index}-${point.slice(0, 30)}`, text: point.trim() }))
+        .filter((point) => point.text);
+    }
+
+    if (typeof this.pov?.points === 'string') {
+      return this.pov.points
+        .split('\n')
+        .map((point, index) => ({ id: `${index}-${point.slice(0, 30)}`, text: point.trim() }))
+        .filter((point) => point.text);
+    }
+
     return [];
   }
 
@@ -97,7 +107,7 @@ export class PovCard {
 
   onAuthorClick(event: Event) {
     event.stopPropagation();
-    if (!this.authorId || this.authorId === this.authService.account()?.uid) {
+    if (!this.authorId || this.authorId === this.authService.account()?.id) {
       this.router.navigate(['/account']);
     } else {
       this.router.navigate(['/profile', this.authorId]);
@@ -147,3 +157,4 @@ export class PovCard {
     });
   }
 }
+

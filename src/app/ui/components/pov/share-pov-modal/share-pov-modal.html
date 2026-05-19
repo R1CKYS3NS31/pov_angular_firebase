@@ -7,7 +7,7 @@
       </div>
       <div class="modal-content">
         <div class="share-grid">
-          @for (action of shareActions; track action) {
+          @for (action of shareActions; track action.name) {
             <div class="share-item" (click)="action.action()">
               <div
                 class="icon-circle"

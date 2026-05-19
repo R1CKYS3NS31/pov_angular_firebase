@@ -56,17 +56,34 @@ html {
 
 body {
   margin: 0;
-  height: 100%;
+  min-height: 100vh;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
+  font-family: Roboto, 'Segoe UI', system-ui, sans-serif;
   font: var(--mat-sys-body-medium);
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
   // Apply smooth transition to all themed components
   * {
-    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-                color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.35s ease, 
+                color 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease;
+  }
+
+  main {
+    min-height: 100vh;
+    padding: 1.5rem 1.2rem 2rem;
+    display: block;
+  }
+
+  input,
+  textarea,
+  button {
+    font: inherit;
   }
 
   // Custom premium scrollbar
@@ -87,4 +104,63 @@ body {
     border: 3px solid transparent;
     background-clip: content-box;
   }
+}
+
+:focus-visible {
+  outline: 3px solid var(--mat-sys-primary);
+  outline-offset: 3px;
+}
+
+.mat-mdc-button, .mat-mdc-button-base, .mat-mdc-icon-button, .mat-mdc-fab {
+  border-radius: 999px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.mat-mdc-card {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  background: var(--mat-sys-surface-container-highest);
+}
+
+.mat-mdc-toolbar {
+  box-shadow: none;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.mat-mdc-form-field-wrapper {
+  border-radius: 0.9rem;
+}
+
+.mat-mdc-input-element {
+  border-radius: 0.9rem;
+}
+
+.mat-mdc-dialog-container, .mat-mdc-dialog-layout {
+  backdrop-filter: blur(10px);
+}
+
+.mat-mdc-chip, .mat-mdc-chip-set {
+  border-radius: 999px;
+}
+
+.mat-mdc-card-header, .mat-mdc-card-content {
+  padding: 1.4rem 1.6rem;
+}
+
+.mat-mdc-card-actions {
+  padding: 1rem 1.6rem 1.4rem;
+}
+
+.mat-mdc-button.mat-primary {
+  box-shadow: 0 14px 30px rgba(117, 64, 0, 0.18);
+}
+
+.mat-mdc-button:not(.mat-primary) {
+  border: 1px solid transparent;
+}
+
+.mat-mdc-button:hover {
+  transform: translateY(-1px);
 }

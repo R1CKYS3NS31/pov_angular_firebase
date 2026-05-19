@@ -13,7 +13,6 @@ import { AccountService } from '@core/services/account.service';
 
 @Component({
   selector: 'app-dialog-comment-pov',
-  standalone: true,
   imports: [
     CommonModule,
     FormsModule,
@@ -51,3 +50,4 @@ export class DialogCommentPov {
     await this.accountService.uncommentPov(this.pov().id, commentId.toString());
   }
 }
+

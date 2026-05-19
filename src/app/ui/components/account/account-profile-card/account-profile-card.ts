@@ -9,7 +9,6 @@ import { User } from '@core/models/user.model';
 
 @Component({
   selector: 'app-account-profile-card',
-  standalone: true,
   imports: [RouterLink, MatButtonModule, MatIconModule, MatChipsModule, MatTooltipModule],
   templateUrl: './account-profile-card.html',
   styleUrls: ['./account-profile-card.scss'],
@@ -44,3 +43,4 @@ export class AccountProfileCard {
     this.signOut.emit();
   }
 }
+

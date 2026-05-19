@@ -19,7 +19,6 @@ import { AccountService } from '@core/services/account.service';
 
 @Component({
   selector: 'app-account',
-  standalone: true,
   imports: [
     RouterLink,
     MatButtonModule,
@@ -113,3 +112,4 @@ export class Account implements OnInit {
     }
   }
 }
+

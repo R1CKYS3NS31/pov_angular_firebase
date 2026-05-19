@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { PoV } from '@core/models/pov.model';
 import { PovList } from '../../pov/pov-list/pov-list';
 
 @Component({
   selector: 'app-account-pov-panel',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [PovList],
   templateUrl: './account-pov-panel.html',
   styleUrls: ['./account-pov-panel.scss'],
@@ -20,3 +20,4 @@ export class AccountPovPanel {
   @Output() edit = new EventEmitter<PoV>();
   @Output() delete = new EventEmitter<string>();
 }
+

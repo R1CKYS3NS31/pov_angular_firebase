@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +9,7 @@ import { NotificationService } from '@core/services/notification.service';
 
 @Component({
   selector: 'app-share-pov-modal',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule],
   templateUrl: './share-pov-modal.html',
   styleUrls: ['./share-pov-modal.scss'],
@@ -22,7 +22,9 @@ export class SharePovModal {
   private notificationService = inject(NotificationService);
 
   get shareUrl() {
-    return `${window.location.origin}/pov/${this.pov?.id}`;
+    return typeof window === 'undefined'
+      ? ''
+      : `${window.location.origin}/pov/${this.pov?.id}`;
   }
 
   shareActions = [
@@ -70,3 +72,4 @@ export class SharePovModal {
     this.close.emit();
   }
 }
+

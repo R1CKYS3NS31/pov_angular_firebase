@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -19,7 +20,7 @@ import { User } from '@core/models/user.model';
 
 @Component({
   selector: 'app-account-settings-dialog',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
     MatDialogModule,
@@ -96,3 +97,4 @@ export class AccountSettingsDialog implements OnChanges {
     return this.settingsForm.get('firstName')?.value?.[0] || '?';
   }
 }
+

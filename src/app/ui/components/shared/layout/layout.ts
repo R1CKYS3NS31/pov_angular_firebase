@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -12,7 +12,10 @@ import { ThemeService } from '../../../../core/services/theme.service';
 
 @Component({
   selector: 'app-layout',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:scroll)': 'onWindowScroll()'
+  },
   imports: [
     RouterOutlet,
     RouterLink,
@@ -32,7 +35,6 @@ export class Layout {
 
   showTopBtn = signal(false);
 
-  @HostListener('window:scroll', [])
   onWindowScroll() {
     this.showTopBtn.set(window.scrollY > 400);
   }
@@ -63,3 +65,4 @@ export class Layout {
     this.themeService.toggleTheme();
   }
 }
+
