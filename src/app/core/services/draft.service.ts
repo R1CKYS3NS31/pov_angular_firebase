@@ -17,6 +17,7 @@ export class DraftService {
   });
 
   public readonly drafts = computed(() => this.draftsSignal());
+  public readonly draftsCount = computed(() => this.draftsSignal().content.length);
 
   constructor() {
     this.loadDrafts();

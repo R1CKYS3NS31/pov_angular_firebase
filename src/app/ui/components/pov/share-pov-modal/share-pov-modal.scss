@@ -1,0 +1,128 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modal-container {
+  background-color: var(--mat-sys-surface);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+  overflow: hidden;
+  animation: modalIn 0.25s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 24px 12px;
+
+  h2 {
+    font-weight: 850;
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.modal-content {
+  padding: 12px 24px 24px;
+}
+
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.share-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+
+    .icon-circle {
+      filter: brightness(0.95);
+    }
+  }
+}
+
+.icon-circle {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.action-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.link-display {
+  display: flex;
+  align-items: center;
+  background-color: var(--mat-sys-surface-container);
+  border-radius: 12px;
+  padding: 4px 4px 4px 16px;
+  border: 1px solid var(--mat-sys-surface-variant);
+}
+
+.url-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface);
+  font-family: monospace;
+  outline: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 24px 24px;
+
+  button {
+    font-weight: 800;
+    border-radius: 12px;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

@@ -12,6 +12,7 @@ export class ThemeService {
   private themeSignal = signal<ThemeMode>('light');
 
   readonly themeMode = computed(() => this.themeSignal());
+  readonly isDarkMode = computed(() => this.themeSignal() === 'dark');
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {

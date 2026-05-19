@@ -1,0 +1,50 @@
+.tabs-wrapper {
+  margin-bottom: 24px;
+  border-radius: 16px;
+  padding: 4px 8px;
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--mat-sys-outline-variant);
+  transition: all 0.3s ease;
+  
+  body.dark-theme & {
+    background-color: rgba(42, 29, 14, 0.55);
+  }
+  
+  body:not(.dark-theme) & {
+    background-color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.tab-icon {
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.tab-label {
+  vertical-align: middle;
+}
+
+.count-chip {
+  margin-left: 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  height: 22px;
+  min-height: 22px;
+  border-radius: 8px !important;
+  color: var(--mat-sys-on-surface-variant);
+  background-color: transparent;
+  border: 1px solid var(--mat-sys-outline-variant);
+  
+  &.active-chip {
+    background-color: rgba(246, 193, 67, 0.15);
+    color: var(--mat-sys-primary);
+    border: 1px solid rgba(246, 193, 67, 0.35);
+  }
+}

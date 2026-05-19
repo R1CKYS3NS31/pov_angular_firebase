@@ -1,0 +1,118 @@
+<div class="account-container">
+  <div class="ambient-glow"></div>
+
+  <div class="account-layout">
+    <!-- Sidebar -->
+    <div class="sidebar-column">
+      <app-account-profile-card
+        [account]="authService.account()"
+        [isAuthenticated]="authService.isAuthenticated()"
+        [myCount]="myPovs?.content?.length || 0"
+        [localCount]="draftService.draftsCount()"
+        (editProfile)="openSettings()"
+        (signOut)="authService.handleSignOut()"
+      >
+      </app-account-profile-card>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-column">
+      <div class="content-header">
+        <h2>Your Perspectives</h2>
+      </div>
+
+      <app-account-pov-tabs
+        [activeTab]="activeTab()"
+        [localCount]="draftService.draftsCount()"
+        [myCount]="myPovs?.content?.length || 0"
+        (tabChange)="onTabChange($event)"
+      >
+      </app-account-pov-tabs>
+
+      <!-- Local Drafts Panel -->
+      @if (activeTab() === 0) {
+        <div>
+          <app-account-pov-panel
+            [items]="draftService.drafts()"
+            [loading]="false"
+            emptyTitle="No local drafts yet"
+            emptyDescription="Create a perspective offline — it stays here until you're ready to post."
+            emptyMessage="No local drafts yet."
+            (edit)="onEditPov($event, true)"
+            (delete)="onDeletePov($event, true)"
+          >
+            <mat-icon empty-icon>folder</mat-icon>
+            <button
+              empty-action
+              mat-stroked-button
+              color="primary"
+              class="rounded-btn"
+              (click)="onEditPov(null, true)"
+            >
+              <mat-icon>add</mat-icon>
+              Create Draft
+            </button>
+          </app-account-pov-panel>
+        </div>
+      }
+
+      <!-- My POVs Panel -->
+      @if (activeTab() === 1) {
+        <div>
+          <app-account-pov-panel
+            [items]="myPovs || { content: [], empty: true }"
+            [loading]="loading"
+            [emptyTitle]="
+              authService.isAuthenticated() ? 'No posted perspectives yet' : 'Not signed in'
+            "
+            [emptyDescription]="
+              authService.isAuthenticated()
+                ? 'Post your first PoV and let the world see your perspective.'
+                : 'Sign in to post and manage your perspectives.'
+            "
+            emptyMessage="No posted perspectives yet."
+            (edit)="onEditPov($event, false)"
+            (delete)="onDeletePov($event, false)"
+          >
+            <mat-icon empty-icon>cloud_upload</mat-icon>
+            <ng-container empty-action>
+              @if (authService.isAuthenticated()) {
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="rounded-btn"
+                  (click)="onEditPov(null, true)"
+                >
+                  <mat-icon>add</mat-icon>
+                  Post Your First PoV
+                </button>
+              }
+              @if (!authService.isAuthenticated()) {
+                <button mat-stroked-button color="primary" class="rounded-btn" routerLink="/signin">
+                  <mat-icon>login</mat-icon>
+                  Sign In
+                </button>
+              }
+            </ng-container>
+          </app-account-pov-panel>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Create FAB -->
+  <button mat-fab color="primary" class="create-fab" (click)="onEditPov(null, true)">
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <!-- Settings Dialog -->
+  <app-account-settings-dialog
+    [open]="settingsOpen()"
+    [account]="authService.account()"
+    [loading]="authService.loading()"
+    (close)="settingsOpen.set(false)"
+    (save)="onSaveSettings($event)"
+    (deleteAccountEvent)="onDeleteAccount()"
+  >
+  </app-account-settings-dialog>
+</div>

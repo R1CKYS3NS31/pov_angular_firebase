@@ -1,0 +1,83 @@
+<div class="layout-container">
+  <mat-toolbar class="header-toolbar">
+    <a routerLink="/" class="logo-link">
+      <div class="logo-icon">P</div>
+      <span class="logo-text">POV</span>
+    </a>
+
+    <span class="spacer"></span>
+
+    <button mat-icon-button [matMenuTriggerFor]="accountMenu" class="avatar-button">
+      @if (displayPicture) {
+        <img [src]="displayPicture" class="avatar-img" />
+      } @else {
+        <div class="avatar-placeholder">{{ firstLetter }}</div>
+      }
+    </button>
+  </mat-toolbar>
+
+  <mat-menu #accountMenu="matMenu" class="account-menu">
+    <div class="menu-header">
+      <div class="menu-name">{{ displayName }}</div>
+      <div class="menu-email">{{ authService.account()?.email || 'Local Account' }}</div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <a
+      mat-menu-item
+      [routerLink]="['/account']"
+      [queryParams]="{ tab: authService.isAuthenticated() ? 1 : 0 }"
+    >
+      <mat-icon color="primary">account_circle</mat-icon>
+      <span>Profile</span>
+    </a>
+
+    <mat-divider></mat-divider>
+
+    @if (authService.isAuthenticated()) {
+      <button mat-menu-item (click)="logout()" class="logout-btn">
+        <mat-icon color="warn">logout</mat-icon>
+        <span>Sign Out</span>
+      </button>
+    } @else {
+      <a mat-menu-item routerLink="/signin" class="login-btn">
+        <mat-icon color="primary">login</mat-icon>
+        <span>Sign In / Support PoV</span>
+      </a>
+    }
+  </mat-menu>
+
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="fab-container">
+    @if (showTopBtn()) {
+      <button
+        mat-fab
+        color="secondary"
+        class="top-btn"
+        (click)="scrollToTop()"
+        matTooltip="Back to top"
+        matTooltipPosition="left"
+      >
+        <mat-icon>keyboard_arrow_up</mat-icon>
+      </button>
+    }
+    <button
+      mat-fab
+      class="theme-btn"
+      (click)="toggleTheme()"
+      matTooltip="Toggle theme"
+      matTooltipPosition="left"
+    >
+      @if (themeService.isDarkMode()) {
+        <mat-icon>light_mode</mat-icon>
+      }
+      @if (!themeService.isDarkMode()) {
+        <mat-icon>dark_mode</mat-icon>
+      }
+    </button>
+  </div>
+</div>

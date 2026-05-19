@@ -1,0 +1,102 @@
+<div class="pov-form-container">
+  @if (loading) {
+    <div class="loading-overlay">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+  }
+
+  <div class="form-body">
+    <h2 class="form-title">{{ title }}</h2>
+    <p class="form-subtitle">What's your perspective? Share it with clarity.</p>
+
+    <form [formGroup]="povForm" class="pov-form-fields" (keydown.control.enter)="submit(true)">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>POV Title</mat-label>
+        <input
+          matInput
+          formControlName="title"
+          placeholder="The core of your perspective..."
+          class="title-input"
+        />
+        <mat-hint align="end"
+          >{{ povForm.get('title')?.value?.length || 0 }}/{{ MAX_TITLE }}</mat-hint
+        >
+        @if (povForm.get('title')?.hasError('required')) {
+          <mat-error>Title is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Detailed Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          rows="4"
+          placeholder="Deep dive into your thoughts, reasoning, and context..."
+        ></textarea>
+        <mat-hint align="end"
+          >{{ povForm.get('description')?.value?.length || 0 }}/{{ MAX_DESC }}</mat-hint
+        >
+        @if (povForm.get('description')?.hasError('required')) {
+          <mat-error>Description is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Key Perspectives (One per line)</mat-label>
+        <textarea
+          matInput
+          formControlName="points"
+          rows="4"
+          placeholder="List your key takeaways here, separating each with a new line..."
+          class="points-input"
+        ></textarea>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div class="form-footer">
+    <div class="footer-actions">
+      <button mat-button color="inherit" (click)="cancel()" [disabled]="loading" class="cancel-btn">
+        Cancel
+      </button>
+
+      <div class="submit-group">
+        @if (!pov || povForm.get('isLocal')?.value) {
+          <button
+            mat-stroked-button
+            color="secondary"
+            (click)="submit(false)"
+            [disabled]="loading"
+            class="draft-btn"
+          >
+            <mat-icon>save</mat-icon>
+            {{ pov ? 'Update Draft' : 'Save Draft' }}
+          </button>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="submit(true)"
+          [disabled]="loading"
+          class="post-btn"
+        >
+          @if (!loading) {
+            <mat-icon>send</mat-icon>
+          }
+          @if (loading) {
+            <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
+          }
+          {{
+            loading
+              ? 'Saving...'
+              : pov && !povForm.get('isLocal')?.value
+                ? 'Update POV'
+                : 'Post POV'
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

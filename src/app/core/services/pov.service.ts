@@ -2,11 +2,14 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { NotificationService } from './notification.service';
 import { type PoV } from '../models/pov.model';
 import { type QuerySnapshotCustom } from '../models/snapshot.model';
-import { getPoVsPublishedFirebase } from '../firebase/controller/pov-firebase';
-
+import {
+  getPoVsPublishedFirebase,
+  searchPoVsByTitleFirebase,
+} from '../firebase/controller/pov-firebase';
+import { OrderByDirection } from '@angular/fire/firestore';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PovService {
   private notificationService = inject(NotificationService);
@@ -17,44 +20,93 @@ export class PovService {
     empty: true,
     content: [],
     lastVisible: null,
-    last: true
-  })
+    last: true,
+  });
 
   public readonly loading = computed(() => this.loadingSignal());
   public readonly povs = computed(() => this.povsSignal());
 
-constructor(){
-  this.loadPublishedPoVs();
-}
+  constructor() {
+    this.loadPublishedPoVs();
+  }
 
-private loadPublishedPoVs(){
-  this.getPovs();
-}
+  private loadPublishedPoVs() {
+    this.getPovs();
+  }
 
-  async getPovs(lastVisible: any = null): Promise<QuerySnapshotCustom<PoV>> {
+  async getPovs(
+    size: number = 12,
+    sortBy: string = 'createdAt',
+    sortOrder: OrderByDirection = 'desc',
+    lastVisible: any = null,
+  ): Promise<QuerySnapshotCustom<PoV>> {
     this.loadingSignal.set(true);
 
-    return await getPoVsPublishedFirebase({ lastVisible })
-      .then(response => {
+    return await getPoVsPublishedFirebase({ size, sortBy, sortOrder, lastVisible })
+      .then((response) => {
         // console.log("getPovs response: ", response);
 
-          this.povsSignal.update(povs => {
-            const mergedContent = lastVisible ? [...povs.content, ...response.content] : [...response.content];
-            return {
-              ...povs,
-              empty: mergedContent.length === 0,
-              content: mergedContent,
-              lastVisible: response.lastVisible,
-              last: response.last
-            }
-          });
-          // this.notificationService.notify("PoVs loaded successfully!", "success");
+        this.povsSignal.update((povs) => {
+          const mergedContent = lastVisible
+            ? [...povs.content, ...response.content]
+            : [...response.content];
+          return {
+            ...povs,
+            empty: mergedContent.length === 0,
+            content: mergedContent,
+            lastVisible: response.lastVisible,
+            last: response.last,
+          };
+        });
+        // this.notificationService.notify("PoVs loaded successfully!", "success");
         return response;
-      }).catch((error: any) => {
+      })
+      .catch((error: any) => {
         this.notificationService.handleApiError(error);
         return this.povsSignal();
-      }).finally(() => {
-        this.loadingSignal.set(false);
       })
+      .finally(() => {
+        this.loadingSignal.set(false);
+      });
+  }
+
+  async searchPovs(
+    query: string,
+    size: number = 12,
+    sortBy: string = 'createdAt',
+    sortOrder: OrderByDirection = 'desc',
+    lastVisible: any = null,
+  ): Promise<QuerySnapshotCustom<PoV>> {
+    this.loadingSignal.set(true);
+
+    return await searchPoVsByTitleFirebase({
+      searchTitle: query,
+      size,
+      sortBy,
+      sortOrder,
+      lastVisible,
+    })
+      .then((response) => {
+        this.povsSignal.update((povs) => {
+          const mergedContent = lastVisible
+            ? [...povs.content, ...response.content]
+            : [...response.content];
+          return {
+            ...povs,
+            empty: mergedContent.length === 0,
+            content: mergedContent,
+            lastVisible: response.lastVisible,
+            last: response.last,
+          };
+        });
+        return response;
+      })
+      .catch((error: any) => {
+        this.notificationService.handleApiError(error);
+        return this.povsSignal();
+      })
+      .finally(() => {
+        this.loadingSignal.set(false);
+      });
   }
 }

@@ -1,0 +1,15 @@
+<div class="filters-container">
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-icon matPrefix class="prefix-icon">search</mat-icon>
+    <input matInput placeholder="Search perspectives..." (input)="onSearchChange($event)">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="sort-field">
+    <mat-icon matPrefix class="prefix-icon">sort</mat-icon>
+    <mat-select [value]="sortBy" (selectionChange)="onSortSelect($event.value)">
+      <mat-option value="createdAt">Newest First</mat-option>
+      <mat-option value="likesCount">Most Liked</mat-option>
+      <mat-option value="commentsCount">Most Discussed</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

@@ -1,0 +1,15 @@
+<div class="pov-dialog-wrapper">
+  <button mat-icon-button class="close-btn" (click)="onClose()" [disabled]="loading">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <mat-dialog-content class="p-0">
+    <app-pov-form
+      [pov]="povToEdit"
+      [loading]="loading"
+      [title]="povToEdit ? 'Edit Perspective' : 'New Perspective'"
+      (onSubmit)="handleSubmit($event)"
+      (onCancel)="onClose()">
+    </app-pov-form>
+  </mat-dialog-content>
+</div>

@@ -1,0 +1,129 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+  padding: 16px;
+}
+
+.auth-card {
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 100%;
+  background-color: var(--mat-sys-surface);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--mat-sys-surface-variant);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.signup-card {
+  max-width: 440px;
+}
+
+.auth-header {
+  text-align: center;
+  
+  h2 {
+    font-weight: 850;
+    margin: 16px 0 8px;
+    font-size: 1.5rem;
+  }
+  
+  .subtitle {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+}
+
+.auth-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 8px 24px -4px rgba(0,0,0,0.2);
+  
+  mat-icon {
+    transform: scale(1.2);
+  }
+}
+
+.google-btn {
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 20px;
+  font-weight: 700;
+  
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  mat-divider {
+    flex: 1;
+  }
+  
+  span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.submit-btn {
+  padding: 8px 0;
+  border-radius: 20px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+
+.footer-divider {
+  margin: 8px 0;
+}
+
+.footer-text {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0;
+  
+  .link-btn {
+    color: var(--mat-sys-primary);
+    font-weight: 800;
+    text-decoration: none;
+    margin-left: 4px;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

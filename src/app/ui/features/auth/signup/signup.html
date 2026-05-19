@@ -1,0 +1,79 @@
+<div class="auth-container">
+  <div class="auth-card signup-card">
+    <div class="auth-header">
+      <div class="auth-icon-wrapper">
+        <mat-icon>person_add</mat-icon>
+      </div>
+      <h2>Join POV</h2>
+      <p class="subtitle">Create an account to share your unique perspectives.</p>
+    </div>
+
+    <button
+      mat-stroked-button
+      class="google-btn"
+      (click)="onGoogleSignIn()"
+      [disabled]="authService.loading()"
+    >
+      <mat-icon svgIcon="google">google</mat-icon>
+      Google
+    </button>
+
+    <div class="divider">
+      <mat-divider></mat-divider>
+      <span>OR REGISTER WITH EMAIL</span>
+      <mat-divider></mat-divider>
+    </div>
+
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" required />
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email Address</mat-label>
+        <input matInput formControlName="email" type="email" required />
+        @if (signupForm.get('email')?.hasError('email')) {
+          <mat-error>Invalid email format</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" type="password" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Confirm Password</mat-label>
+        <input matInput formControlName="confirmPassword" type="password" required />
+        @if (signupForm.get('confirmPassword')?.hasError('passwordMismatch')) {
+          <mat-error>Passwords do not match</mat-error>
+        }
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="signupForm.invalid || authService.loading()"
+        class="submit-btn"
+      >
+        {{ authService.loading() ? 'Creating...' : 'Create Account' }}
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </form>
+
+    <mat-divider class="footer-divider"></mat-divider>
+
+    <p class="footer-text">
+      Already have an account?
+      <a routerLink="/signin" class="link-btn">Sign In</a>
+    </p>
+  </div>
+</div>

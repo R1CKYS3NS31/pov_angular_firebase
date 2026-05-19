@@ -1,0 +1,83 @@
+<div class="profile-container">
+  <div class="ambient-glow"></div>
+
+  @if (userService.loading()) {
+    <div class="loading-state">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  @if (!userService.loading() && !userService.user()) {
+    <div class="not-found-state">
+      <h3 class="not-found-text">User not found</h3>
+      <button mat-stroked-button (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Go Back
+      </button>
+    </div>
+  }
+
+  @if (!userService.loading() && userService.user()) {
+    <button mat-button class="back-btn" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+    <div class="profile-layout">
+      <div class="profile-sidebar">
+        <div class="profile-card glass-effect">
+          <div class="avatar-container">
+            @if (userService.user()?.displayPicture) {
+              <img
+                [src]="userService.user()?.displayPicture"
+                alt="Profile"
+                class="profile-avatar"
+              />
+            }
+            @if (!userService.user()?.displayPicture) {
+              <div class="avatar-placeholder">
+                @if (userService.user()?.name?.first) {
+                  <span>{{ userService.user()?.name?.first?.charAt(0) }}</span>
+                }
+                @if (!userService.user()?.name?.first) {
+                  <mat-icon>person_outline</mat-icon>
+                }
+              </div>
+            }
+          </div>
+          <h2 class="profile-name">
+            {{
+              userService.user()?.name?.full ||
+                `${userService.user()?.name?.first} ${userService.user()?.name?.last}`.trim() ||
+                'Unknown User'
+            }}
+          </h2>
+          <p class="profile-bio">{{ userService.user()?.description ?? 'No bio provided.' }}</p>
+          <div class="stats-box">
+            <span class="stats-number">{{ userService.userPoVs().content.length || 0 }}</span> //
+            TODO: Change to real count when API supports it
+            <span class="stats-label">Perspectives</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-content">
+        <div class="content-header">
+          <h2>
+            {{
+              userService.user()?.name?.first
+                ? userService.user()?.name?.first + "'s Perspectives"
+                : 'Perspectives'
+            }}
+          </h2>
+        </div>
+        <app-pov-list
+          [povs]="userService.userPoVs()"
+          [loading]="userService.loading()"
+          emptyMessage="{{
+            userService.user()?.name?.first || 'This user'
+          }} hasn't shared any perspectives yet."
+        >
+        </app-pov-list>
+      </div>
+    </div>
+  }
+</div>

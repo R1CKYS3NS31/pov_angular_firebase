@@ -1,0 +1,22 @@
+.home-container {
+  padding-bottom: 64px;
+}
+
+.content-wrapper {
+  margin-top: -32px;
+  position: relative;
+  z-index: 2;
+  
+  @media (min-width: 900px) {
+    margin-top: -48px;
+  }
+}
+
+.filters-section {
+  margin-bottom: 32px;
+}
+
+.list-section {
+  display: flex;
+  flex-direction: column;
+}

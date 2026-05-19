@@ -1,0 +1,40 @@
+@if (open) {
+  <div class="modal-overlay" (click)="onClose()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Share this POV</h2>
+        <button mat-icon-button (click)="onClose()"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="modal-content">
+        <div class="share-grid">
+          @for (action of shareActions; track action) {
+            <div class="share-item" (click)="action.action()">
+              <div
+                class="icon-circle"
+                [style.backgroundColor]="action.color + '1a'"
+                [style.color]="action.color"
+              >
+                <mat-icon>{{ action.icon }}</mat-icon>
+              </div>
+              <span class="action-name">{{ action.name }}</span>
+            </div>
+          }
+        </div>
+        <div class="link-display">
+          <input type="text" [value]="shareUrl" readonly class="url-input" />
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="copyToClipboard()"
+            matTooltip="Copy Link"
+          >
+            <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button mat-button (click)="onClose()">Close</button>
+      </div>
+    </div>
+  </div>
+}

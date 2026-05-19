@@ -1,0 +1,27 @@
+.pov-dialog-wrapper {
+  position: relative;
+  background-color: transparent;
+}
+
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 21;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.p-0 {
+  padding: 0 !important;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+// Ensure the form card inside has the correct look
+::ng-deep app-pov-form .pov-card-form {
+  margin: 0;
+}

@@ -1,0 +1,48 @@
+.panel-container {
+  min-height: 200px;
+}
+
+.empty-state-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  background-color: var(--mat-sys-surface);
+  border-radius: 12px;
+  border: 1px dashed var(--mat-sys-surface-variant);
+  text-align: center;
+}
+
+.empty-icon-wrapper {
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.5;
+  margin-bottom: 16px;
+  
+  ::ng-deep mat-icon {
+    font-size: 44px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface);
+  margin-bottom: 8px;
+}
+
+.empty-description {
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 24px;
+  font-size: 0.875rem;
+  max-width: 320px;
+}
+
+.empty-action {
+  ::ng-deep button {
+    border-radius: 20px;
+    font-weight: 700;
+  }
+}

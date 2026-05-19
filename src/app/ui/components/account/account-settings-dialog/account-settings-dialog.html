@@ -1,0 +1,91 @@
+@if (open) {
+  <div class="dialog-overlay" (click)="onClose()">
+    <div class="dialog-panel" (click)="$event.stopPropagation()">
+      <div class="dialog-header">
+        <h2>Account Settings</h2>
+        <button mat-icon-button (click)="onClose()"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="dialog-content" [formGroup]="settingsForm">
+        <!-- Avatar Section -->
+        <div class="avatar-section">
+          <div class="avatar-preview">
+            @if (settingsForm.get('displayPicture')?.value) {
+              <img [src]="settingsForm.get('displayPicture')?.value" class="preview-img" />
+            }
+            @if (!settingsForm.get('displayPicture')?.value) {
+              <div class="preview-initial">{{ previewInitial }}</div>
+            }
+          </div>
+          <div class="avatar-url-input">
+            <label class="field-label">Profile Picture URL</label>
+            <mat-form-field appearance="outline" class="w-100">
+              <input matInput formControlName="displayPicture" placeholder="https://..." />
+            </mat-form-field>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <!-- Personal Info -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName" />
+          </mat-form-field>
+        </div>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Email Address</mat-label>
+          <input matInput formControlName="email" [disabled]="true" />
+          <mat-hint>Email cannot be changed</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Bio</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            rows="3"
+            placeholder="Tell the world about your perspective..."
+          ></textarea>
+        </mat-form-field>
+        <mat-divider></mat-divider>
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+          <h4 class="danger-title">Danger Zone</h4>
+          <p class="danger-description">
+            Deleting your account will permanently remove all your data and perspectives. This
+            cannot be undone.
+          </p>
+          @if (!deleteConfirm) {
+            <div>
+              <button
+                mat-stroked-button
+                color="warn"
+                class="danger-btn"
+                (click)="deleteConfirm = true"
+              >
+                Delete Account
+              </button>
+            </div>
+          }
+          @if (deleteConfirm) {
+            <div class="confirm-row">
+              <button mat-flat-button color="warn" class="danger-btn" (click)="onDelete()">
+                <mat-icon>delete_forever</mat-icon>
+                Confirm Delete
+              </button>
+              <button mat-button (click)="deleteConfirm = false">Cancel</button>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button mat-button (click)="onClose()">Cancel</button>
+        <button mat-flat-button color="primary" [disabled]="loading" (click)="onSave()">
+          {{ loading ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

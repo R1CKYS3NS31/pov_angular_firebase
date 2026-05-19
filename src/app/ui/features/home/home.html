@@ -1,0 +1,25 @@
+<div class="home-container">
+  <app-home-hero></app-home-hero>
+
+  <div class="content-wrapper container">
+    <div class="filters-section">
+      <app-home-filters 
+        [sortBy]="sort()"
+        (search)="onSearch($event)"
+        (sortChange)="onSortChange($event)">
+      </app-home-filters>
+    </div>
+
+    <div class="list-section">
+      <app-pov-list 
+        [povs]="povService.povs()" 
+        [loading]="povService.loading()" 
+        [hasMore]="hasMore()"
+        [loadingMore]="povService.loading()"
+        (loadMore)="onLoadMore()"
+        (edit)="onEditPov($event)"
+        (delete)="onDeletePov($event)">
+      </app-pov-list>
+    </div>
+  </div>
+</div>

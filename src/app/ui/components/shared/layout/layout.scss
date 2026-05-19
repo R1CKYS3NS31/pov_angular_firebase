@@ -1,0 +1,124 @@
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.header-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 64px;
+  backdrop-filter: blur(24px) saturate(180%);
+  background-color: rgba(var(--mat-sys-background-rgb), 0.88);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  box-shadow: 0 1px 20px rgba(0,0,0,0.05);
+  
+  body.dark-theme & {
+    background-color: rgba(var(--mat-sys-background-rgb), 0.88);
+    box-shadow: 0 1px 20px rgba(0,0,0,0.4);
+  }
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--mat-sys-on-surface);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #f6c143, #3a8b4a);
+  color: #180d00;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  box-shadow: 0 4px 12px rgba(246, 193, 67, 0.3);
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.avatar-button {
+  padding: 4px;
+}
+
+.avatar-img, .avatar-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.menu-header {
+  padding: 8px 16px;
+  outline: none;
+  
+  .menu-name {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  
+  .menu-email {
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.logout-btn {
+  color: var(--mat-sys-error);
+  mat-icon {
+    color: var(--mat-sys-error);
+  }
+}
+
+.main-content {
+  padding-top: 64px; // To offset the fixed toolbar
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.fab-container {
+  position: fixed;
+  bottom: 80px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

@@ -1,0 +1,79 @@
+<mat-card class="pov-card">
+  <div class="card-body">
+    <div class="card-grid">
+      <!-- Avatar Column -->
+      <div class="avatar-col">
+        <div class="author-avatar" (click)="onAuthorClick($event)" matTooltip="View profile">
+          @if (authorPicture) {
+            <img [src]="authorPicture" alt="Author" />
+          }
+          @if (!authorPicture) {
+            <div class="avatar-placeholder">{{ authorName[0] }}</div>
+          }
+        </div>
+      </div>
+
+      <!-- Content Column -->
+      <div class="content-col">
+        <div class="header-meta">
+          <div class="author-info">
+            <span class="author-name" (click)="onAuthorClick($event)">{{ authorName }}</span>
+            <span class="pov-date">• {{ formatDate(pov.createdAt) }}</span>
+          </div>
+
+          <!-- Speed Dial Actions -->
+          <div class="speed-dial" [class.open]="speedDialOpen">
+            <button mat-icon-button class="trigger-btn" (click)="toggleSpeedDial($event)" matTooltip="Actions">
+              <mat-icon>{{ speedDialOpen ? 'close' : 'add_reaction' }}</mat-icon>
+            </button>
+            
+            <div class="action-buttons">
+              @if (isAuthor) {
+                <button mat-icon-button color="warn" class="action-btn" matTooltip="Delete" (click)="onDelete(); $event.stopPropagation()">
+                  <mat-icon>delete_sweep</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" class="action-btn" matTooltip="{{ pov.published ? 'Unpublish' : 'Publish' }}" (click)="togglePublish(); $event.stopPropagation()">
+                  <mat-icon>{{ pov.published ? 'public_off' : 'public' }}</mat-icon>
+                </button>
+                <button mat-icon-button class="action-btn" matTooltip="Edit" (click)="onEdit(); $event.stopPropagation()">
+                  <mat-icon>edit_note</mat-icon>
+                </button>
+              }
+              @if (isAuthenticated) {
+                <button mat-icon-button class="action-btn" matTooltip="Comment" (click)="openComment(); $event.stopPropagation()">
+                  <mat-icon>comment</mat-icon>
+                </button>
+                <button mat-icon-button class="action-btn" matTooltip="{{ hasLiked ? 'Unlike' : 'Like' }}" (click)="toggleLike(); $event.stopPropagation()">
+                  <mat-icon [color]="hasLiked ? 'warn' : ''">{{ hasLiked ? 'favorite' : 'favorite_border' }}</mat-icon>
+                </button>
+              }
+              <button mat-icon-button class="action-btn" matTooltip="Copy text" (click)="onCopy(); $event.stopPropagation()">
+                <mat-icon>file_copy</mat-icon>
+              </button>
+              <button mat-icon-button class="action-btn" matTooltip="Share" (click)="onShare(); $event.stopPropagation()">
+                <mat-icon>share</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+ 
+        <h3 class="pov-title">{{ pov.title || 'Untitled Perspective' }}</h3>
+ 
+        <p class="pov-description">{{ pov.description || 'No description provided.' }}</p>
+ 
+        @if (pointsArray.length > 0) {
+          <div class="pov-points">
+            @for (point of pointsArray; track point) {
+              <div class="point-item">
+                {{ point }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</mat-card>
+
+<app-share-pov-modal [open]="shareModalOpen" [pov]="pov" (close)="shareModalOpen = false">
+</app-share-pov-modal>

@@ -28,7 +28,7 @@ export class AuthService {
     private loadingSignal = signal<boolean>(true);
 
     // Todo: confirm that it is account.id not account.uid
-    public readonly account = computed<User | null>(() => this.userSignal());
+    public readonly account = computed<User>(() => this.userSignal());
     public readonly loading = computed<boolean>(() => this.loadingSignal());
     public readonly isAuthenticated = computed<boolean>(() => this.isAuthenticatedSignal());
 
