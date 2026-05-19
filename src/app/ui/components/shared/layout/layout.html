@@ -19,7 +19,7 @@
   <mat-menu #accountMenu="matMenu" class="account-menu">
     <div class="menu-header">
       <div class="menu-name">{{ displayName }}</div>
-      <div class="menu-email">{{ authService.account()?.email || 'Local Account' }}</div>
+      <div class="menu-email">{{ authService.account().email || 'Local Account' }}</div>
     </div>
 
     <mat-divider></mat-divider>

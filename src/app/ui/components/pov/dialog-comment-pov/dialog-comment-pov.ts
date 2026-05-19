@@ -30,7 +30,7 @@ export class DialogCommentPov {
   private dialogRef = inject(MatDialogRef<DialogCommentPov>);
   public data = inject<{ pov: PoV }>(MAT_DIALOG_DATA);
   private accountService = inject(AccountService);
-  private authService = inject(AuthService);
+   authService = inject(AuthService);
 
   newComment = signal<string>('');
   pov = signal<PoV>(this.data.pov);

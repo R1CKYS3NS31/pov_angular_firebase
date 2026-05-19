@@ -11,9 +11,9 @@
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">folder</mat-icon>
         <span class="tab-label">Local Drafts</span>
-        @if (localCount > 0) {
-          <mat-chip [class.active-chip]="activeTab === 0" class="count-chip">{{
-            localCount
+        @if (localCount() > 0) {
+          <mat-chip [class.active-chip]="activeTab() === 0" class="count-chip">{{
+            localCount()
           }}</mat-chip>
         }
       </ng-template>
@@ -24,9 +24,9 @@
       <ng-template mat-tab-label>
         <mat-icon class="tab-icon">cloud_upload</mat-icon>
         <span class="tab-label">My POVs</span>
-        @if (myCount > 0) {
-          <mat-chip [class.active-chip]="activeTab === 1" class="count-chip">{{
-            myCount
+        @if (myCount() > 0) {
+          <mat-chip [class.active-chip]="activeTab() === 1" class="count-chip">{{
+            myCount()
           }}</mat-chip>
         }
       </ng-template>

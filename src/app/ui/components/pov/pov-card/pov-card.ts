@@ -14,6 +14,7 @@ import { PovService } from '@core/services/pov.service';
 import { NotificationService } from '@core/services/notification.service';
 import { SharePovModal } from '../share-pov-modal/share-pov-modal';
 import { DialogCommentPov } from '../dialog-comment-pov/dialog-comment-pov';
+import { AccountService } from '@core/services/account.service';
 
 @Component({
   selector: 'app-pov-card',
@@ -37,6 +38,7 @@ export class PovCard {
 
   authService = inject(AuthService);
   povService = inject(PovService);
+  accountService = inject(AccountService);
   notificationService = inject(NotificationService);
   router = inject(Router);
   dialog = inject(MatDialog);
@@ -49,12 +51,6 @@ export class PovCard {
     this.speedDialOpen = !this.speedDialOpen;
   }
 
-  get account() {
-    return this.authService.user();
-  }
-  get isAuthenticated() {
-    return this.authService.isAuthenticated();
-  }
 
   get authorId() {
     if (!this.pov?.author) return null;
@@ -62,7 +58,7 @@ export class PovCard {
   }
 
   get isAuthor() {
-    return this.isAuthenticated && this.account?.uid === this.authorId;
+    return this.authService.isAuthenticated() && this.authService.account()?.uid === this.authorId;
   }
 
   get authorName() {
@@ -78,7 +74,7 @@ export class PovCard {
   }
 
   get hasLiked() {
-    return this.pov?.likes?.includes(this.account?.uid as string);
+    return this.pov?.likes?.includes(this.authService.account()?.uid as string);
   }
 
   get pointsArray(): string[] {
@@ -101,7 +97,7 @@ export class PovCard {
 
   onAuthorClick(event: Event) {
     event.stopPropagation();
-    if (!this.authorId || this.authorId === this.account?.uid) {
+    if (!this.authorId || this.authorId === this.authService.account()?.uid) {
       this.router.navigate(['/account']);
     } else {
       this.router.navigate(['/profile', this.authorId]);
@@ -109,16 +105,16 @@ export class PovCard {
   }
 
   async toggleLike() {
-    if (!this.isAuthenticated) return;
+    if (!this.authService.isAuthenticated()) return;
     if (this.hasLiked) {
-      await this.povService.unlikePov(this.pov.id);
+      await this.accountService.unlikePov(this.pov.id);
     } else {
-      await this.povService.likePov(this.pov.id);
+      await this.accountService.likePov(this.pov.id);
     }
   }
 
   async togglePublish() {
-    await this.povService.updatePov(this.pov.id, { published: !this.pov.published });
+    await this.accountService.updatePov(this.pov.id, { published: !this.pov.published });
   }
 
   onEdit() {
@@ -127,7 +123,7 @@ export class PovCard {
 
   onDelete() {
     if (confirm(`Are you sure you want to delete "${this.pov.title}"?`)) {
-      this.povService.deletePov(this.pov.id);
+      this.accountService.deletePov(this.pov.id);
       this.delete.emit(this.pov.id);
     }
   }

@@ -1,22 +1,22 @@
 <div class="profile-card glass-effect">
   <div class="avatar-wrapper">
     <div class="avatar-container">
-      @if (account?.displayPicture) {
-        <img [src]="account?.displayPicture" alt="Profile" class="profile-avatar" />
+      @if (account().displayPicture) {
+        <img [src]="account().displayPicture" alt="Profile" class="profile-avatar" />
       }
-      @if (!account?.displayPicture) {
+      @if (!account().displayPicture) {
         <div class="avatar-placeholder">
-          @if (account?.name?.first) {
+          @if (account().name.first) {
             <span>{{ firstInitial }}</span>
           }
-          @if (!account?.name?.first) {
+          @if (!account().name.first) {
             <mat-icon>person_outline</mat-icon>
           }
         </div>
       }
     </div>
 
-    @if (isAuthenticated) {
+    @if (isAuthenticated()) {
       <button
         mat-mini-fab
         color="primary"
@@ -30,22 +30,22 @@
   </div>
 
   <h2 class="profile-name">{{ displayName }}</h2>
-  <span class="profile-email">{{ account?.email ?? 'No email — please sign in.' }}</span>
+  <span class="profile-email">{{ account().email || 'No email — please sign in.' }}</span>
 
-  <p class="profile-bio">{{ account?.description ?? 'No bio provided.' }}</p>
+  <p class="profile-bio">{{ account().description ?? 'No bio provided.' }}</p>
 
   <div class="stats-chips">
-    <mat-chip class="custom-chip-outlined">{{ localCount }} Drafted</mat-chip>
-    <mat-chip class="custom-chip-outlined">{{ myCount }} Posted</mat-chip>
+    <mat-chip class="custom-chip-outlined">{{ localCount() }} Drafted</mat-chip>
+    <mat-chip class="custom-chip-outlined">{{ myCount()  }} Posted</mat-chip>
   </div>
 
-  @if (isAuthenticated) {
+  @if (isAuthenticated()) {
     <button mat-stroked-button color="warn" class="auth-btn w-100" (click)="onSignOut()">
       Sign Out
     </button>
   }
 
-  @if (!isAuthenticated) {
+  @if (!isAuthenticated()) {
     <button mat-stroked-button color="primary" class="auth-btn w-100" routerLink="/signin">
       <mat-icon>login</mat-icon>
       Sign In

@@ -9,6 +9,7 @@ import { PovService } from '@core/services/pov.service';
 import { DraftService } from '@core/services/draft.service';
 import { NotificationService } from '@core/services/notification.service';
 import { PoV } from '@core/models/pov.model';
+import { AccountService } from '@core/services/account.service';
 
 @Component({
   selector: 'app-pov-dialog',
@@ -25,7 +26,7 @@ export class PovDialog {
   isLocal = false;
 
   authService = inject(AuthService);
-  povService = inject(PovService);
+  accountService = inject(AccountService);
   draftService = inject(DraftService);
   notificationService = inject(NotificationService);
 
@@ -41,15 +42,15 @@ export class PovDialog {
   async handleSubmit(event: { formData: any; triggerServerPost: boolean }) {
     const { formData, triggerServerPost } = event;
     const isUpdate = !!this.povToEdit?.id;
-    const user = this.authService.user();
+    const account = this.authService.account();
 
     // Server posts require authentication
-    if (triggerServerPost && !user) {
+    if (triggerServerPost && !account) {
       this.notificationService.notify('Cannot post: User not authenticated', 'error');
       return;
     }
 
-    const authorId = user?.uid || user?.id || 'local-guest';
+    const authorId = account?.id|| 'guest_user';
 
     this.loading = true;
 
@@ -64,9 +65,9 @@ export class PovDialog {
         povData.isLocal = false;
 
         if (isUpdate && !this.isLocal) {
-          await this.povService.updatePov(this.povToEdit!.id, povData);
+          await this.accountService.updatePov(this.povToEdit!.id, povData);
         } else {
-          await this.povService.createPov(povData);
+          await this.accountService.createPov(povData);
         }
 
         // If it was local and now posted to server, delete local
@@ -78,8 +79,8 @@ export class PovDialog {
         // Save as local draft
         povData.author = {
           id: authorId,
-          displayName: user?.displayName || user?.name || 'Local Guest',
-          displayPicture: user?.displayPicture || '',
+          displayName: account?.displayName || account?.name || 'Local Guest',
+          displayPicture: account?.displayPicture || '',
         };
         povData.isLocal = true;
 

@@ -39,7 +39,7 @@
                   <mat-icon>edit_note</mat-icon>
                 </button>
               }
-              @if (isAuthenticated) {
+              @if (authService.isAuthenticated()) {
                 <button mat-icon-button class="action-btn" matTooltip="Comment" (click)="openComment(); $event.stopPropagation()">
                   <mat-icon>comment</mat-icon>
                 </button>

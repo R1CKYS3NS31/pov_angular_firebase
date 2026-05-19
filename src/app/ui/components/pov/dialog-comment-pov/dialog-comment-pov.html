@@ -5,33 +5,34 @@
       @for (comment of pov().comments; track comment.id) {
         <div class="comment-item">
           <div class="comment-header">
-            @if (comment.postedBy?.displayPicture) {
+            @if (comment.postedBy.displayPicture) {
               <img
-                [src]="comment.postedBy?.displayPicture || ''"
+                [src]="comment.postedBy.displayPicture || ''"
                 class="comment-avatar"
                 alt="Avatar"
               />
             }
-            @if (!comment.postedBy?.displayPicture) {
+            @if (!comment.postedBy.displayPicture) {
               <div class="comment-avatar-placeholder">
                 <mat-icon>person</mat-icon>
               </div>
             }
             <div class="comment-author-info">
               <div class="comment-author-name">
-                {{
-                  comment.postedBy?.name?.full || comment.postedBy?.name?.first || 'Unknown User'
-                }}
+                {{ comment.postedBy.name.full || comment.postedBy.name.first || 'Unknown User' }}
               </div>
             </div>
 
-            @if (authService.account()?.uid === comment.postedBy?.id || authService.account()?.id === comment.postedBy?.id) {
+            @if (
+              this.authService.account().uid === comment.postedBy.id ||
+              authService.account().id === comment.postedBy.id
+            ) {
               <button
                 mat-icon-button
                 color="warn"
                 class="delete-btn"
                 (click)="handleUncomment(comment.id)"
-                [disabled]="loading()"
+                [disabled]="authService.loading()"
               >
                 <mat-icon>delete_outline</mat-icon>
               </button>
@@ -60,7 +61,7 @@
           mat-flat-button
           color="primary"
           type="submit"
-          [disabled]="loading() || !newComment().trim()"
+          [disabled]="authService.loading() || !newComment().trim()"
         >
           Post Comment
         </button>
