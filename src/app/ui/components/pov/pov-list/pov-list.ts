@@ -37,6 +37,10 @@ export class PovList implements AfterViewInit, OnDestroy {
   private observer: IntersectionObserver | null = null;
 
   ngAfterViewInit() {
+    if (typeof IntersectionObserver === 'undefined' || typeof window === 'undefined') {
+      return;
+    }
+
     this.observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && this.hasMore && !this.loading && !this.loadingMore) {
@@ -46,7 +50,7 @@ export class PovList implements AfterViewInit, OnDestroy {
       { threshold: 0.1 },
     );
 
-    if (this.loadMoreTrigger) {
+    if (this.loadMoreTrigger?.nativeElement) {
       this.observer.observe(this.loadMoreTrigger.nativeElement);
     }
   }
