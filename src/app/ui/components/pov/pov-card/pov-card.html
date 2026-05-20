@@ -22,7 +22,9 @@
           </div>
 
           <!-- Speed Dial Actions -->
-          <div class="speed-dial" [class.open]="speedDialOpen">
+          <div class="speed-dial" [class.open]="speedDialOpen" 
+     (mouseenter)="speedDialOpen = true"
+     (mouseleave)="speedDialOpen = false">
             <button mat-icon-button class="trigger-btn" (click)="toggleSpeedDial($event)" matTooltip="Actions">
               <mat-icon>{{ speedDialOpen ? 'close' : 'add_reaction' }}</mat-icon>
             </button>

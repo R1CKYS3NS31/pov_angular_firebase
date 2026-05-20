@@ -40,11 +40,11 @@
   cursor: pointer;
   background-color: var(--mat-sys-secondary);
   transition: transform 0.2s;
-  
+
   &:hover {
     transform: scale(1.05);
   }
-  
+
   img {
     width: 100%;
     height: 100%;
@@ -81,7 +81,7 @@
   font-size: 0.9375rem;
   cursor: pointer;
   color: var(--mat-sys-on-surface);
-  
+
   &:hover {
     color: var(--mat-sys-primary);
   }
@@ -114,6 +114,7 @@
   font-size: 1rem;
   color: var(--mat-sys-on-surface);
   display: -webkit-box;
+  line-clamp: 4;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -145,17 +146,17 @@
   display: flex;
   align-items: center;
   position: relative;
-  
+
   .trigger-btn {
     transition: transform 0.3s ease;
     color: var(--mat-sys-on-surface-variant);
-    
+
     &:hover {
       background-color: var(--mat-sys-surface-variant);
       transform: scale(1.1);
     }
   }
-  
+
   &.open .trigger-btn {
     transform: rotate(90deg);
     color: var(--mat-sys-primary);
@@ -165,14 +166,14 @@
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     position: absolute;
-    right: 48px;
+    right: 52px;
     opacity: 0;
     visibility: hidden;
     transform: translateX(20px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    
+
     .action-btn {
       width: 36px;
       height: 36px;
@@ -182,12 +183,15 @@
       color: var(--mat-sys-on-surface-variant);
       box-shadow: var(--app-shadow-z1);
       transform: scale(0);
-      transition: transform 0.2s ease, background-color 0.2s, color 0.2s;
+      transition:
+        transform 0.2s ease,
+        background-color 0.2s,
+        color 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
       border: 1px solid var(--mat-sys-outline-variant);
-      
+
       mat-icon {
         font-size: 18px;
         width: 18px;
@@ -196,14 +200,14 @@
         align-items: center;
         justify-content: center;
       }
-      
+
       &:hover {
         background-color: var(--mat-sys-surface-container-highest);
         color: var(--mat-sys-primary);
         transform: scale(1.1);
       }
-      
-      &[color="warn"]:hover {
+
+      &[color='warn']:hover {
         color: var(--mat-sys-error) !important;
       }
     }
@@ -213,10 +217,15 @@
     opacity: 1;
     visibility: visible;
     transform: translateX(0);
-    
+
     .action-btn {
       transform: scale(1);
     }
+
+    @for $i from 1 through 5 {
+      &:nth-child(#{$i}) {
+        transition-delay: #{$i * 0.04}s;
+      }
+    }
   }
 }
-

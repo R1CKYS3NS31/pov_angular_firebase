@@ -2,41 +2,45 @@
 @use './pov-theme-colors' as theme;
 
 // Define the light theme
-$light-theme: mat.define-theme((
-  color: (
-    theme-type: light,
-    primary: theme.$primary-palette,
-    tertiary: theme.$tertiary-palette,
-  ),
-  typography: (
-    plain-family: Roboto,
-    brand-family: Roboto,
-  ),
-  density: (
-    scale: 0,
-  ),
-));
+$light-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: theme.$primary-palette,
+      tertiary: theme.$tertiary-palette,
+    ),
+    typography: (
+      plain-family: Roboto,
+      brand-family: Roboto,
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
 
 // Define the dark theme
-$dark-theme: mat.define-theme((
-  color: (
-    theme-type: dark,
-    primary: theme.$primary-palette,
-    tertiary: theme.$tertiary-palette,
-  ),
-  typography: (
-    plain-family: Roboto,
-    brand-family: Roboto,
-  ),
-  density: (
-    scale: 0,
-  ),
-));
+$dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: theme.$primary-palette,
+      tertiary: theme.$tertiary-palette,
+    ),
+    typography: (
+      plain-family: Roboto,
+      brand-family: Roboto,
+    ),
+    density: (
+      scale: 0,
+    ),
+  )
+);
 
 html {
   height: 100%;
   color-scheme: light;
-  
+
   // Apply all component themes
   @include mat.all-component-themes($light-theme);
   @include mat.system-level-colors($light-theme);
@@ -48,10 +52,11 @@ html {
     @include mat.system-level-colors($dark-theme);
     @include mat.system-level-typography($dark-theme);
   }
-  
+
   // Global smooth transition for theme changes
-  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-              color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
@@ -68,16 +73,23 @@ body {
 
   // Apply smooth transition to all themed components
   * {
-    transition: background-color 0.35s ease, 
-                color 0.35s ease,
-                border-color 0.35s ease,
-                box-shadow 0.35s ease;
+    transition:
+      background-color 0.35s ease,
+      color 0.35s ease,
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
   }
 
   main {
     min-height: 100vh;
     padding: 1.5rem 1.2rem 2rem;
     display: block;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
   }
 
   input,
@@ -111,7 +123,10 @@ body {
   outline-offset: 3px;
 }
 
-.mat-mdc-button, .mat-mdc-button-base, .mat-mdc-icon-button, .mat-mdc-fab {
+.mat-mdc-button,
+.mat-mdc-button-base,
+.mat-mdc-icon-button,
+.mat-mdc-fab {
   border-radius: 999px;
   font-weight: 600;
   text-transform: none;
@@ -137,15 +152,18 @@ body {
   border-radius: 0.9rem;
 }
 
-.mat-mdc-dialog-container, .mat-mdc-dialog-layout {
+.mat-mdc-dialog-container,
+.mat-mdc-dialog-layout {
   backdrop-filter: blur(10px);
 }
 
-.mat-mdc-chip, .mat-mdc-chip-set {
+.mat-mdc-chip,
+.mat-mdc-chip-set {
   border-radius: 999px;
 }
 
-.mat-mdc-card-header, .mat-mdc-card-content {
+.mat-mdc-card-header,
+.mat-mdc-card-content {
   padding: 1.4rem 1.6rem;
 }
 
