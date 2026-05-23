@@ -7,7 +7,7 @@
       <app-account-profile-card
         [account]="authService.account()"
         [isAuthenticated]="authService.isAuthenticated()"
-        [myCount]="myPovs?.content?.length || 0"
+        [myCount]="accountService.myPoVs().content.length || 0"
         [localCount]="draftService.draftsCount()"
         (editProfile)="openSettings()"
         (signOut)="authService.handleSignOut()"
@@ -24,7 +24,7 @@
       <app-account-pov-tabs
         [activeTab]="activeTab()"
         [localCount]="draftService.draftsCount()"
-        [myCount]="myPovs?.content?.length || 0"
+        [myCount]="accountService.myPoVs().content.length || 0"
         (tabChange)="onTabChange($event)"
       >
       </app-account-pov-tabs>
@@ -60,8 +60,8 @@
       @if (activeTab() === 1) {
         <div>
           <app-account-pov-panel
-            [items]="myPovs || { content: [], empty: true }"
-            [loading]="loading"
+            [items]="accountService.myPoVs()"
+            [loading]="accountService.loading()"
             [emptyTitle]="
               authService.isAuthenticated() ? 'No posted perspectives yet' : 'Not signed in'
             "

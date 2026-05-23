@@ -16,6 +16,7 @@ import { PovDialog } from '../../components/pov/pov-dialog/pov-dialog';
 import { PoV } from '@core/models/pov.model';
 import { User } from '@core/models/user.model';
 import { AccountService } from '@core/services/account.service';
+import { QuerySnapshotCustom } from '@core/models/snapshot.model';
 
 @Component({
   selector: 'app-account',
@@ -43,9 +44,6 @@ export class Account implements OnInit {
   activeTab = signal<number>(0);
   settingsOpen = signal<boolean>(false);
 
-  myPovs: { content: PoV[]; empty: boolean } | null = null;
-  loading = false;
-
   ngOnInit() {
     this.route.queryParamMap.subscribe((params) => {
       const tab = parseInt(params.get('tab') || '0', 10);
@@ -55,15 +53,10 @@ export class Account implements OnInit {
   }
 
   async loadMyPovs() {
-    this.loading = true;
-    try {
-      const response = await this.accountService.getMyPoVs(); // load my PoVs
-      if (response) {
-        this.myPovs = { content: response.content, empty: response.content.length === 0 };
-      }
-    } finally {
-      this.loading = false;
+    if (this.activeTab() !== 0) {
+      return await this.accountService.getMyPoVs(); // only load when My PoVs tab is active
     }
+    return;
   }
 
   onTabChange(index: number) {
@@ -102,14 +95,6 @@ export class Account implements OnInit {
       this.draftService.deleteDraft(povId);
       return;
     }
-
     await this.accountService.deletePov(povId);
-    if (this.myPovs) {
-      this.myPovs = {
-        content: this.myPovs.content.filter((p) => p.id !== povId),
-        empty: this.myPovs.content.length - 1 === 0,
-      };
-    }
   }
 }
-

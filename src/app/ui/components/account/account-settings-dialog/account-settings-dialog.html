@@ -1,4 +1,4 @@
-@if (open) {
+@if (open()) {
   <div class="dialog-overlay" (click)="onClose()">
     <div class="dialog-panel" (click)="$event.stopPropagation()">
       <div class="dialog-header">
@@ -82,8 +82,8 @@
       </div>
       <div class="dialog-actions">
         <button mat-button (click)="onClose()">Cancel</button>
-        <button mat-flat-button color="primary" [disabled]="loading" (click)="onSave()">
-          {{ loading ? 'Saving...' : 'Save Changes' }}
+        <button mat-flat-button color="primary" [disabled]="loading()" (click)="onSave()">
+          {{ loading() ? 'Saving...' : 'Save Changes' }}
         </button>
       </div>
     </div>

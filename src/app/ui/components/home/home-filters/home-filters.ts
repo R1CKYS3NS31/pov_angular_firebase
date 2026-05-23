@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -16,7 +23,7 @@ import { debounceTime } from 'rxjs/operators';
   styleUrls: ['./home-filters.scss'],
 })
 export class HomeFilters implements OnDestroy {
-  @Input() sortBy: string = 'createdAt';
+  sortBy = input<string>('createdAt');
 
   @Output() search = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<string>();
@@ -41,4 +48,3 @@ export class HomeFilters implements OnDestroy {
     this.searchSubscription.unsubscribe();
   }
 }
-

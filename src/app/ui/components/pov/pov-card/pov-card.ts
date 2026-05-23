@@ -73,6 +73,7 @@ export class PovCard {
     return typeof this.pov.author === 'object' ? (this.pov.author as User).displayPicture : '';
   }
 
+  // Todo: Implement proper like/unlike with backend integration and error handling
   get hasLiked() {
     return this.pov?.likes?.includes(this.authService.account()?.id as string);
   }
@@ -114,6 +115,7 @@ export class PovCard {
     }
   }
 
+  // Todo: Implement proper like/unlike with backend integration and error handling
   async toggleLike() {
     if (!this.authService.isAuthenticated()) return;
     if (this.hasLiked) {

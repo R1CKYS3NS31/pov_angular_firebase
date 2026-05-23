@@ -6,9 +6,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PovList } from '../../components/pov/pov-list/pov-list';
 import { UserService } from '@core/services/user.service';
-import { PovService } from '@core/services/pov.service';
-import { User } from '@core/models/user.model';
-import { PoV } from '@core/models/pov.model';
 
 @Component({
   selector: 'app-profile',
@@ -32,11 +29,14 @@ export class Profile implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.userId = params.get('id')!!;
       if (this.userId) {
-        this.userService.getUserProfile(this.userId).then(() => {
-          return this.userService.getPoVsByAuthor(this.userId);
-        });
+        this.loadProfileData(this.userId);
       }
     });
+  }
+
+  async loadProfileData(userId: string) {
+    await this.userService.getUserProfile(userId);
+    await this.userService.getPoVsByAuthor(userId);
   }
 
   // async loadProfileData(userId: string) {

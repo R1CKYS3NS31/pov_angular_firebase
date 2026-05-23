@@ -7,6 +7,7 @@ import {
   Output,
   SimpleChanges,
   inject,
+  input,
 } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -34,9 +35,9 @@ import { User } from '@core/models/user.model';
   styleUrls: ['./account-settings-dialog.scss'],
 })
 export class AccountSettingsDialog implements OnChanges {
-  @Input() open: boolean = false;
-  @Input() account: User | null = null;
-  @Input() loading: boolean = false;
+   open = input<boolean>(false);
+   account = input<User | null>(null);
+   loading = input<boolean>(false);
 
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<Partial<User>>();
@@ -56,13 +57,13 @@ export class AccountSettingsDialog implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['account'] || changes['open']) {
-      if (this.account && this.open) {
+      if (this.account && this.open()) {
         this.settingsForm.patchValue({
-          firstName: this.account.name?.first || '',
-          lastName: this.account.name?.last || '',
-          description: this.account.description || '',
-          displayPicture: this.account.displayPicture || '',
-          email: this.account.email || '',
+          firstName: this.account()?.name?.first || '',
+          lastName: this.account()?.name?.last || '',
+          description: this.account()?.description || '',
+          displayPicture: this.account()?.displayPicture || '',
+          email: this.account()?.email || '',
         });
         this.deleteConfirm = false;
       }
