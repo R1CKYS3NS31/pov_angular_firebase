@@ -19,7 +19,7 @@ import { QuerySnapshotCustom } from '@core/models/snapshot.model';
   styleUrls: ['./account-pov-panel.scss'],
 })
 export class AccountPovPanel {
-  items = input<QuerySnapshotCustom<PoV> | null>(null);
+  items = input<QuerySnapshotCustom<PoV>>();
   loading = input<boolean>(false);
   emptyTitle = input<string>('');
   emptyDescription = input<string>('');
