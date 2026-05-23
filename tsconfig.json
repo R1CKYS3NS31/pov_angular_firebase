@@ -14,7 +14,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "paths": {
+     "paths": {
       "@core/*": ["./src/app/core/*"],
       "@ui/*": ["./src/app/ui/*"],
       "@styles/*": ["./src/app/styles/*"],

@@ -6,9 +6,13 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "pov-angular": {
+    "pov_angular_firebase": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -18,21 +22,16 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
                 "input": "public"
               }
             ],
-            "styles": ["src/app/ui/styles/pov-material-theme.scss"],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "security": {
-              "allowedHosts": []
-            },
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "styles": [
+              "src/app/ui/styles/pov-material-theme.scss"
+            ]
           },
           "configurations": {
             "production": {
@@ -62,10 +61,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "pov-angular:build:production"
+              "buildTarget": "pov_angular_firebase:build:production"
             },
             "development": {
-              "buildTarget": "pov-angular:build:development"
+              "buildTarget": "pov_angular_firebase:build:development"
             }
           },
           "defaultConfiguration": "development"

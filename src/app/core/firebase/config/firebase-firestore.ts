@@ -22,7 +22,7 @@ import {
   type OrderByDirection,
   type WhereFilterOp,
 } from "firebase/firestore";
-import { firebaseApp } from "./firebase-config";
+import { firebaseApp } from "./firebase.config";
 import { QuerySnapshotCustom } from "../../models/snapshot.model";
 
 const firestore = getFirestore(firebaseApp);

@@ -6,7 +6,7 @@ import {
   getPoVsPublishedFirebase,
   searchPoVsByTitleFirebase,
 } from '../firebase/controller/pov-firebase';
-import { OrderByDirection } from '@angular/fire/firestore';
+import { OrderByDirection } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',

@@ -18,7 +18,7 @@ import {
   type User as FirebaseUser,
   type NextOrObserver,
 } from "firebase/auth";
-import { firebaseApp } from "./firebase-config";
+import { firebaseApp } from "./firebase.config";
 
 const auth = getAuth(firebaseApp);
 auth.useDeviceLanguage();
