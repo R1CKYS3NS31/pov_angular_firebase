@@ -1,13 +1,12 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-  AfterViewInit,
   OnDestroy,
+  ViewChild,
+  input,
+  output,
 } from '@angular/core';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -23,15 +22,15 @@ import { QuerySnapshotCustom } from '@core/models/snapshot.model';
   styleUrls: ['./pov-list.scss'],
 })
 export class PovList implements AfterViewInit, OnDestroy {
-  @Input() povs: QuerySnapshotCustom<PoV> | null = null;
-  @Input() loading = false;
-  @Input() hasMore = false;
-  @Input() loadingMore = false;
-  @Input() emptyMessage = 'No POVs found';
+  povs = input<QuerySnapshotCustom<PoV> | null>(null);
+  loading = input(false);
+  hasMore = input(false);
+  loadingMore = input(false);
+  emptyMessage = input('No POVs found');
 
-  @Output() edit = new EventEmitter<PoV>();
-  @Output() delete = new EventEmitter<string>();
-  @Output() loadMore = new EventEmitter<void>();
+  edit = output<PoV>();
+  delete = output<string>();
+  loadMore = output<void>();
 
   @ViewChild('loadMoreTrigger') loadMoreTrigger!: ElementRef;
 
@@ -44,7 +43,12 @@ export class PovList implements AfterViewInit, OnDestroy {
 
     this.observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && this.hasMore && !this.loading && !this.loadingMore) {
+        if (
+          entries[0].isIntersecting &&
+          this.hasMore() &&
+          !this.loading() &&
+          !this.loadingMore()
+        ) {
           this.loadMore.emit();
         }
       },
@@ -62,6 +66,5 @@ export class PovList implements AfterViewInit, OnDestroy {
     }
   }
 
-  // Create an array for the skeleton loaders
   skeletonArray = [1, 2, 3];
 }

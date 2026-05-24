@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,16 +15,15 @@ import { NotificationService } from '@core/services/notification.service';
   styleUrls: ['./share-pov-modal.scss'],
 })
 export class SharePovModal {
-  @Input() open = false;
-  @Input() pov: PoV | null = null;
-  @Output() close = new EventEmitter<void>();
+  open = input(false);
+  pov = input<PoV | null>(null);
+  close = output<void>();
 
   private notificationService = inject(NotificationService);
 
   get shareUrl() {
-    return typeof window === 'undefined'
-      ? ''
-      : `${window.location.origin}/pov/${this.pov?.id}`;
+    const current = this.pov();
+    return typeof window === 'undefined' ? '' : `${window.location.origin}/pov/${current?.id}`;
   }
 
   shareActions = [
@@ -43,11 +42,11 @@ export class SharePovModal {
     },
     {
       name: 'Twitter',
-      icon: 'share', // Using generic share as 'twitter' icon isn't in default mat-icons
+      icon: 'share',
       color: '#1DA1F2',
       action: () =>
         window.open(
-          `https://twitter.com/intent/tweet?url=${this.shareUrl}&text=${this.pov?.title}`,
+          `https://twitter.com/intent/tweet?url=${this.shareUrl}&text=${this.pov()?.title}`,
           '_blank',
         ),
     },
@@ -57,7 +56,7 @@ export class SharePovModal {
       color: '#25D366',
       action: () =>
         window.open(
-          `https://api.whatsapp.com/send?text=${this.pov?.title} ${this.shareUrl}`,
+          `https://api.whatsapp.com/send?text=${this.pov()?.title} ${this.shareUrl}`,
           '_blank',
         ),
     },

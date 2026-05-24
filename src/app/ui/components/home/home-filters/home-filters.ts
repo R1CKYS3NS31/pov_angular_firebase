@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  input,
-  OnDestroy,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, OnDestroy, output } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -24,16 +17,13 @@ import { debounceTime } from 'rxjs/operators';
 })
 export class HomeFilters implements OnDestroy {
   sortBy = input<string>('createdAt');
-
-  @Output() search = new EventEmitter<string>();
-  @Output() sortChange = new EventEmitter<string>();
+  search = output<string>();
+  sortChange = output<string>();
 
   searchSubject = new Subject<string>();
   private searchSubscription = this.searchSubject.pipe(debounceTime(300)).subscribe((query) => {
     this.search.emit(query);
   });
-
-  constructor() {}
 
   onSearchChange(event: Event) {
     const query = (event.target as HTMLInputElement).value;

@@ -1,17 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  inject,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,7 +13,6 @@ import { User } from '@core/models/user.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    MatDialogModule,
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
@@ -34,14 +22,14 @@ import { User } from '@core/models/user.model';
   templateUrl: './account-settings-dialog.html',
   styleUrls: ['./account-settings-dialog.scss'],
 })
-export class AccountSettingsDialog implements OnChanges {
-   open = input<boolean>(false);
-   account = input<User | null>(null);
-   loading = input<boolean>(false);
+export class AccountSettingsDialog {
+  open = input<boolean>(false);
+  account = input<User | null>(null);
+  loading = input<boolean>(false);
 
-  @Output() close = new EventEmitter<void>();
-  @Output() save = new EventEmitter<Partial<User>>();
-  @Output() deleteAccountEvent = new EventEmitter<void>();
+  close = output<void>();
+  save = output<Partial<User>>();
+  deleteAccountEvent = output<void>();
 
   private fb = inject(FormBuilder);
 
@@ -55,23 +43,25 @@ export class AccountSettingsDialog implements OnChanges {
 
   deleteConfirm = false;
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['account'] || changes['open']) {
-      if (this.account && this.open()) {
+  constructor() {
+    effect(() => {
+      const currentAccount = this.account();
+      if (currentAccount && this.open()) {
         this.settingsForm.patchValue({
-          firstName: this.account()?.name?.first || '',
-          lastName: this.account()?.name?.last || '',
-          description: this.account()?.description || '',
-          displayPicture: this.account()?.displayPicture || '',
-          email: this.account()?.email || '',
+          firstName: currentAccount.name?.first || '',
+          lastName: currentAccount.name?.last || '',
+          description: currentAccount.description || '',
+          displayPicture: currentAccount.displayPicture || '',
+          email: currentAccount.email || '',
         });
         this.deleteConfirm = false;
       }
-    }
+    });
   }
 
   onSave() {
-    if (!this.account) return;
+    const currentAccount = this.account();
+    if (!currentAccount) return;
     const { firstName, lastName, description, displayPicture } = this.settingsForm.value;
     const updates: Partial<User> = {
       name: {
@@ -98,4 +88,3 @@ export class AccountSettingsDialog implements OnChanges {
     return this.settingsForm.get('firstName')?.value?.[0] || '?';
   }
 }
-

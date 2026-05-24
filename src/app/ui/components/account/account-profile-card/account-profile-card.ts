@@ -1,4 +1,4 @@
-import { Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,12 +19,12 @@ export class AccountProfileCard {
   myCount = input<number>(0);
   localCount = input<number>(0);
 
-  @Output() editProfile = new EventEmitter<void>();
+  editProfile = output<void>();
+  signOut = output<void>();
 
   get firstInitial(): string {
     return this.account()?.name?.first?.[0] || '';
   }
-  @Output() signOut = new EventEmitter<void>();
 
   get displayName() {
     return (

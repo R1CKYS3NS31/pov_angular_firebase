@@ -1,12 +1,12 @@
 <div class="pov-form-container">
-  @if (loading) {
+  @if (loading()) {
     <div class="loading-overlay">
       <mat-spinner diameter="40"></mat-spinner>
     </div>
   }
 
   <div class="form-body">
-    <h2 class="form-title">{{ title }}</h2>
+    <h2 class="form-title">{{ displayTitle() }}</h2>
     <p class="form-subtitle">What's your perspective? Share it with clarity.</p>
 
     <form [formGroup]="povForm" class="pov-form-fields" (keydown.control.enter)="submit(true)">
@@ -57,21 +57,21 @@
 
   <div class="form-footer">
     <div class="footer-actions">
-      <button mat-button color="inherit" (click)="cancel()" [disabled]="loading" class="cancel-btn">
+      <button mat-button color="inherit" (click)="cancel()" [disabled]="loading()" class="cancel-btn">
         Cancel
       </button>
 
       <div class="submit-group">
-        @if (!pov || povForm.get('isLocal')?.value) {
+        @if (!pov() || povForm.get('isLocal')?.value) {
           <button
             mat-stroked-button
             color="secondary"
             (click)="submit(false)"
-            [disabled]="loading"
+            [disabled]="loading()"
             class="draft-btn"
           >
             <mat-icon>save</mat-icon>
-            {{ pov ? 'Update Draft' : 'Save Draft' }}
+            {{ pov() ? 'Update Draft' : 'Save Draft' }}
           </button>
         }
 
@@ -79,19 +79,19 @@
           mat-flat-button
           color="primary"
           (click)="submit(true)"
-          [disabled]="loading"
+          [disabled]="loading()"
           class="post-btn"
         >
-          @if (!loading) {
+          @if (!loading()) {
             <mat-icon>send</mat-icon>
           }
-          @if (loading) {
+          @if (loading()) {
             <mat-spinner diameter="18" class="btn-spinner"></mat-spinner>
           }
           {{
-            loading
+            loading()
               ? 'Saving...'
-              : pov && !povForm.get('isLocal')?.value
+              : pov() && !povForm.get('isLocal')?.value
                 ? 'Update POV'
                 : 'Post POV'
           }}

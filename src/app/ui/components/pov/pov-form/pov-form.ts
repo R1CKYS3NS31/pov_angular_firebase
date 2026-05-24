@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -24,13 +24,13 @@ import { PoV } from '@core/models/pov.model';
   templateUrl: './pov-form.html',
   styleUrls: ['./pov-form.scss'],
 })
-export class PovForm implements OnInit {
-  @Input() pov: Partial<PoV> | null = null;
-  @Input() loading = false;
-  @Input() title = '';
+export class PovForm {
+  pov = input<Partial<PoV> | null>(null);
+  loading = input(false);
+  title = input('');
 
-  @Output() onSubmit = new EventEmitter<{ formData: any; triggerServerPost: boolean }>();
-  @Output() onCancel = new EventEmitter<void>();
+  onSubmit = output<{ formData: any; triggerServerPost: boolean }>();
+  onCancel = output<void>();
 
   private fb = inject(FormBuilder);
   povForm!: FormGroup;
@@ -38,24 +38,29 @@ export class PovForm implements OnInit {
   MAX_TITLE = 120;
   MAX_DESC = 3000;
 
-  ngOnInit() {
+  readonly displayTitle = computed(() =>
+    this.title() || (this.pov() ? 'Edit Perspective' : 'Share a Point of View'),
+  );
+
+  constructor() {
     this.povForm = this.fb.group({
-      title: [this.pov?.title || '', [Validators.required, Validators.maxLength(this.MAX_TITLE)]],
-      description: [
-        this.pov?.description || '',
-        [Validators.required, Validators.maxLength(this.MAX_DESC)],
-      ],
-      points: [
-        Array.isArray(this.pov?.points)
-          ? this.pov?.points.join('\n')
-          : (this.pov?.points as string) || '',
-      ],
-      isLocal: [this.pov?.isLocal || false],
+      title: ['', [Validators.required, Validators.maxLength(this.MAX_TITLE)]],
+      description: ['', [Validators.required, Validators.maxLength(this.MAX_DESC)]],
+      points: [''],
+      isLocal: [false],
     });
 
-    if (!this.title) {
-      this.title = this.pov ? 'Edit Perspective' : 'Share a Point of View';
-    }
+    effect(() => {
+      const currentPov = this.pov();
+      this.povForm.patchValue({
+        title: currentPov?.title || '',
+        description: currentPov?.description || '',
+        points: Array.isArray(currentPov?.points)
+          ? currentPov?.points.join('\n')
+          : (currentPov?.points as string) || '',
+        isLocal: currentPov?.isLocal || false,
+      });
+    });
   }
 
   submit(triggerServerPost: boolean) {

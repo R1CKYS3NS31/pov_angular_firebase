@@ -1,4 +1,4 @@
-@if (loading) {
+@if (loading()) {
   <div class="skeleton-container">
     @for (item of skeletonArray; track item) {
       <div class="skeleton-card">
@@ -22,19 +22,17 @@
   </div>
 }
 
-
-
 <div class="list-container">
-  @if (!loading && povs && !povs.empty) {
+  @if (!loading() && povs() && !povs()!.empty) {
     <div class="pov-items">
-      @for (pov of povs.content; track pov.id) {
+      @for (pov of povs()!.content; track pov.id) {
         <app-pov-card [pov]="pov" (edit)="edit.emit($event)" (delete)="delete.emit($event)">
         </app-pov-card>
       }
     </div>
   }
-  <div #loadMoreTrigger class="load-more-trigger" [class.hidden]="!hasMore">
-    @if (loadingMore) {
+  <div #loadMoreTrigger class="load-more-trigger" [class.hidden]="!hasMore()">
+    @if (loadingMore()) {
       <mat-spinner diameter="32"></mat-spinner>
     }
   </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 import { PoV } from '@core/models/pov.model';
 import { User } from '@core/models/user.model';
 import { AuthService } from '@core/services/auth.service';
-import { PovService } from '@core/services/pov.service';
 import { NotificationService } from '@core/services/notification.service';
 import { SharePovModal } from '../share-pov-modal/share-pov-modal';
 import { DialogCommentPov } from '../dialog-comment-pov/dialog-comment-pov';
@@ -32,12 +31,11 @@ import { AccountService } from '@core/services/account.service';
   styleUrls: ['./pov-card.scss'],
 })
 export class PovCard {
-  @Input() pov!: PoV;
-  @Output() edit = new EventEmitter<PoV>();
-  @Output() delete = new EventEmitter<string>();
+  pov = input.required<PoV>();
+  edit = output<PoV>();
+  delete = output<string>();
 
   authService = inject(AuthService);
-  povService = inject(PovService);
   accountService = inject(AccountService);
   notificationService = inject(NotificationService);
   router = inject(Router);
@@ -51,10 +49,10 @@ export class PovCard {
     this.speedDialOpen = !this.speedDialOpen;
   }
 
-
   get authorId() {
-    if (!this.pov?.author) return null;
-    return typeof this.pov.author === 'object' ? (this.pov.author as User).id : this.pov.author;
+    const current = this.pov();
+    if (!current?.author) return null;
+    return typeof current.author === 'object' ? (current.author as User).id : current.author;
   }
 
   get isAuthor() {
@@ -62,31 +60,33 @@ export class PovCard {
   }
 
   get authorName() {
-    if (!this.pov?.author) return 'Unknown Author';
-    return typeof this.pov.author === 'object'
-      ? (this.pov.author as User).displayName || 'Unknown'
+    const current = this.pov();
+    if (!current?.author) return 'Unknown Author';
+    return typeof current.author === 'object'
+      ? (current.author as User).displayName || 'Unknown'
       : 'Unknown Author';
   }
 
   get authorPicture() {
-    if (!this.pov?.author) return '';
-    return typeof this.pov.author === 'object' ? (this.pov.author as User).displayPicture : '';
+    const current = this.pov();
+    if (!current?.author) return '';
+    return typeof current.author === 'object' ? (current.author as User).displayPicture : '';
   }
 
-  // Todo: Implement proper like/unlike with backend integration and error handling
   get hasLiked() {
-    return this.pov?.likes?.includes(this.authService.account()?.id as string);
+    return this.pov()?.likes?.includes(this.authService.account()?.id as string);
   }
 
   get pointsArray(): Array<{ id: string; text: string }> {
-    if (Array.isArray(this.pov?.points)) {
-      return this.pov.points
+    const current = this.pov();
+    if (Array.isArray(current?.points)) {
+      return current.points
         .map((point, index) => ({ id: `${index}-${point.slice(0, 30)}`, text: point.trim() }))
         .filter((point) => point.text);
     }
 
-    if (typeof this.pov?.points === 'string') {
-      return this.pov.points
+    if (typeof current?.points === 'string') {
+      return current.points
         .split('\n')
         .map((point, index) => ({ id: `${index}-${point.slice(0, 30)}`, text: point.trim() }))
         .filter((point) => point.text);
@@ -115,28 +115,31 @@ export class PovCard {
     }
   }
 
-  // Todo: Implement proper like/unlike with backend integration and error handling
   async toggleLike() {
-    if (!this.authService.isAuthenticated()) return;
+    const current = this.pov();
+    if (!this.authService.isAuthenticated() || !current) return;
     if (this.hasLiked) {
-      await this.accountService.unlikePov(this.pov.id);
+      await this.accountService.unlikePov(current.id);
     } else {
-      await this.accountService.likePov(this.pov.id);
+      await this.accountService.likePov(current.id);
     }
   }
 
   async togglePublish() {
-    await this.accountService.updatePov(this.pov.id, { published: !this.pov.published });
+    const current = this.pov();
+    if (!current) return;
+    await this.accountService.updatePov(current.id, { published: !current.published });
   }
 
   onEdit() {
-    this.edit.emit(this.pov);
+    this.edit.emit(this.pov());
   }
 
   onDelete() {
-    if (confirm(`Are you sure you want to delete "${this.pov.title}"?`)) {
-      this.accountService.deletePov(this.pov.id);
-      this.delete.emit(this.pov.id);
+    const current = this.pov();
+    if (!current) return;
+    if (confirm(`Are you sure you want to delete "${current.title}"?`)) {
+      this.delete.emit(current.id);
     }
   }
 
@@ -145,14 +148,16 @@ export class PovCard {
   }
 
   onCopy() {
-    const text = `${this.pov.title}\n\n${this.pov.description}\n\nShared via PoV`;
+    const current = this.pov();
+    if (!current) return;
+    const text = `${current.title}\n\n${current.description}\n\nShared via PoV`;
     navigator.clipboard.writeText(text);
     this.notificationService.notify('PoV copied to clipboard!', 'success');
   }
 
   openComment() {
     this.dialog.open(DialogCommentPov, {
-      data: { pov: this.pov },
+      data: { pov: this.pov() },
       width: '600px',
       maxWidth: '95vw',
       autoFocus: false,

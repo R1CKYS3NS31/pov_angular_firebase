@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { type PoV } from '../models/pov.model';
 import { type QuerySnapshotCustom } from '../models/snapshot.model';
 import { commentOnPoVFirebase, deletePoVFirebase, getMyPoVsFirebase, likePoVFirebase, savePoVFirebase, uncommentPoVFirebase, unLikePoVFirebase, updatePoVFirebase } from '../firebase/controller/pov-firebase';
+// import { PovService } from './pov.service';
+// import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -72,11 +74,11 @@ export class AccountService {
     this.loadingSignal.set(true);
     await savePoVFirebase(povData)
       .then(response => {
-        // console.log("createPov response: ", response);
+        const savedPov = response as PoV;
         this.myPoVsSignal.update(povs => ({
           ...povs,
           empty: false,
-          content: [response as PoV, ...povs.content],
+          content: [savedPov, ...povs.content],
         }));
         this.notificationService.notify("PoV created successfully!", "success");
       }).catch((error: any) => {
@@ -93,10 +95,10 @@ export class AccountService {
     this.loadingSignal.set(true);
     await updatePoVFirebase(povId, povData)
       .then(response => {
-        // console.log("updatePov response: ", response);
+        const updatedPov = response as PoV;
         this.myPoVsSignal.update(povs => ({
           ...povs,
-          content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+          content: povs.content.map(p => p.id === povId ? { ...p, ...updatedPov } : p)
         }));
         this.notificationService.notify("PoV updated successfully!", "success");
       }).catch((error: any) => {
@@ -135,10 +137,10 @@ export class AccountService {
 
     this.loadingSignal.set(true);
     await likePoVFirebase(povId, this.account()!.id).then(response => {
-      // console.log("likePov response: ", response);
+      const updatedPov = response as PoV;
       this.myPoVsSignal.update(povs => ({
         ...povs,
-        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+        content: povs.content.map(p => p.id === povId ? { ...p, ...updatedPov } : p)
       }));
       this.notificationService.notify("PoV liked!", "success");
     }).catch((error: any) => {
@@ -153,10 +155,10 @@ export class AccountService {
 
     this.loadingSignal.set(true);
     await unLikePoVFirebase(povId, this.account()!.id).then(response => {
-      // console.log("unlikePov response: ", response);
+      const updatedPov = response as PoV;
       this.myPoVsSignal.update(povs => ({
         ...povs,
-        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+        content: povs.content.map(p => p.id === povId ? { ...p, ...updatedPov } : p)
       }));
       this.notificationService.notify("PoV unliked!", "success");
     }).catch((error: any) => {
@@ -172,10 +174,10 @@ export class AccountService {
 
     this.loadingSignal.set(true);
     await commentOnPoVFirebase(povId, account, { comment: commentText }).then(response => {
-      // console.log("commentOnPov response: ", response);
+      const updatedPov = response as PoV;
       this.myPoVsSignal.update(povs => ({
         ...povs,
-        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+        content: povs.content.map(p => p.id === povId ? { ...p, ...updatedPov } : p)
       }));
       this.notificationService.notify("Comment added!", "success");
     }).catch((error: any) => {
@@ -191,10 +193,10 @@ export class AccountService {
 
     this.loadingSignal.set(true);
     await uncommentPoVFirebase(povId, commentId).then(response => {
-      // console.log("uncommentPov response: ", response);
+      const updatedPov = response as PoV;
       this.myPoVsSignal.update(povs => ({
         ...povs,
-        content: povs.content.map(p => p.id === povId ? { ...p, ...response } : p)
+        content: povs.content.map(p => p.id === povId ? { ...p, ...updatedPov } : p)
       }));
       this.notificationService.notify("Comment removed!", "success");
     }).catch((error: any) => {

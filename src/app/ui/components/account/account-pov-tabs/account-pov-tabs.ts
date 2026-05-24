@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -11,12 +11,11 @@ import { MatChipsModule } from '@angular/material/chips';
   styleUrls: ['./account-pov-tabs.scss'],
 })
 export class AccountPovTabs {
-
   activeTab = input<number>(0);
   localCount = input<number>(0);
   myCount = input<number>(0);
 
-  @Output() tabChange = new EventEmitter<number>();
+  tabChange = output<number>();
 
   onTabChange(index: number) {
     this.tabChange.emit(index);

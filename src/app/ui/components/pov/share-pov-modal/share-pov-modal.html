@@ -1,4 +1,4 @@
-@if (open) {
+@if (open()) {
   <div class="modal-overlay" (click)="onClose()">
     <div class="modal-container" (click)="$event.stopPropagation()">
       <div class="modal-header">
