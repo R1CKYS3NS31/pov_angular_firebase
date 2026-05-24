@@ -1,27 +1,41 @@
 <div class="panel-container">
-  @if (items()?.empty && !loading()) {
+  @if (items?.empty && !loading) {
     <div class="empty-state-panel">
       <div class="empty-icon-wrapper">
         <ng-content select="[empty-icon]"></ng-content>
       </div>
-      <h3 class="empty-title">{{ emptyTitle() }}</h3>
-      <p class="empty-description">{{ emptyDescription() }}</p>
+      <h3 class="empty-title">{{ emptyTitle }}</h3>
+      <p class="empty-description">{{ emptyDescription }}</p>
       <div class="empty-action">
         <ng-content select="[empty-action]"></ng-content>
       </div>
     </div>
   }
 
-  @if (!items()?.empty || loading()) {
+  @if (loading) {
     <div class="list-wrapper">
       <app-pov-list
-        [povs]="items()"
-        [loading]="loading()"
-        [emptyMessage]="emptyMessage()"
+        [povs]="items"
+        [loading]="loading"
+        [emptyMessage]="emptyMessage"
         (edit)="edit.emit($event)"
         (delete)="delete.emit($event)"
       >
       </app-pov-list>
     </div>
   }
+
+  @if (!items?.empty || !loading) {
+    <div class="list-wrapper">
+      <app-pov-list
+        [povs]="items"
+        [loading]="loading"
+        [emptyMessage]="emptyMessage"
+        (edit)="edit.emit($event)"
+        (delete)="delete.emit($event)"
+      >
+      </app-pov-list>
+    </div>
+  }
+
 </div>

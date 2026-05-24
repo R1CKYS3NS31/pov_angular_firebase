@@ -8,7 +8,6 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
-  input,
 } from '@angular/core';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -24,11 +23,11 @@ import { QuerySnapshotCustom } from '@core/models/snapshot.model';
   styleUrls: ['./pov-list.scss'],
 })
 export class PovList implements AfterViewInit, OnDestroy {
-  povs = input<QuerySnapshotCustom<PoV>>();
-  loading = input<boolean>(false);
-  hasMore = input<boolean>(false);
-  loadingMore = input<boolean>(false);
-  emptyMessage = input<string>('No POVs found');
+  @Input() povs: QuerySnapshotCustom<PoV> | null = null;
+  @Input() loading = false;
+  @Input() hasMore = false;
+  @Input() loadingMore = false;
+  @Input() emptyMessage = 'No POVs found';
 
   @Output() edit = new EventEmitter<PoV>();
   @Output() delete = new EventEmitter<string>();
@@ -45,7 +44,7 @@ export class PovList implements AfterViewInit, OnDestroy {
 
     this.observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && this.hasMore() && !this.loading() && !this.loadingMore()) {
+        if (entries[0].isIntersecting && this.hasMore && !this.loading && !this.loadingMore) {
           this.loadMore.emit();
         }
       },

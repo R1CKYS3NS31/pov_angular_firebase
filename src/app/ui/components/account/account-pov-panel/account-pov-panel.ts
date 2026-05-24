@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  input,
   Input,
   Output,
 } from '@angular/core';
@@ -19,11 +18,11 @@ import { QuerySnapshotCustom } from '@core/models/snapshot.model';
   styleUrls: ['./account-pov-panel.scss'],
 })
 export class AccountPovPanel {
-  items = input<QuerySnapshotCustom<PoV>>();
-  loading = input<boolean>(false);
-  emptyTitle = input<string>('');
-  emptyDescription = input<string>('');
-  emptyMessage = input<string>('');
+  @Input() items: QuerySnapshotCustom<PoV> | null = null;
+  @Input() loading = false;
+  @Input() emptyTitle = '';
+  @Input() emptyDescription = '';
+  @Input() emptyMessage = '';
 
   @Output() edit = new EventEmitter<PoV>();
   @Output() delete = new EventEmitter<string>();

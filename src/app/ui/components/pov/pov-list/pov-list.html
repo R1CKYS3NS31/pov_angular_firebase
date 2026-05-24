@@ -1,4 +1,4 @@
-@if (loading()) {
+@if (loading) {
   <div class="skeleton-container">
     @for (item of skeletonArray; track item) {
       <div class="skeleton-card">
@@ -22,27 +22,20 @@
   </div>
 }
 
-@if (!loading && (!povs() || povs()?.empty)) {
-  <div class="empty-state">
-    <div class="empty-content">
-      <h3 class="empty-main-title">Nothing to see here</h3>
-      <p class="empty-subtitle">{{ emptyMessage() }}</p>
-    </div>
-  </div>
-}
 
-@if (!loading && povs() && !povs()?.empty) {
-  <div class="list-container">
+
+<div class="list-container">
+  @if (!loading && povs && !povs.empty) {
     <div class="pov-items">
-      @for (pov of povs()?.content; track pov.id) {
+      @for (pov of povs.content; track pov.id) {
         <app-pov-card [pov]="pov" (edit)="edit.emit($event)" (delete)="delete.emit($event)">
         </app-pov-card>
       }
     </div>
-    <div #loadMoreTrigger class="load-more-trigger" [class.hidden]="!hasMore()">
-      @if (loadingMore()) {
-        <mat-spinner diameter="32"></mat-spinner>
-      }
-    </div>
+  }
+  <div #loadMoreTrigger class="load-more-trigger" [class.hidden]="!hasMore">
+    @if (loadingMore) {
+      <mat-spinner diameter="32"></mat-spinner>
+    }
   </div>
-}
+</div>
