@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, inject, input, output } from '@angu
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -22,7 +21,6 @@ import { AccountService } from '@core/services/account.service';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatMenuModule,
     MatTooltipModule,
     MatDialogModule,
     SharePovModal,

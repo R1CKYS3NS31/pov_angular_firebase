@@ -41,19 +41,36 @@ html {
   height: 100%;
   color-scheme: light;
 
-  // Apply all component themes
-  @include mat.all-component-themes($light-theme);
+  // @include mat.core();
+  // @include mat.button-theme($light-theme);
+  // @include mat.icon-button-theme($light-theme);
+  // @include mat.fab-theme($light-theme);
+  // @include mat.card-theme($light-theme);
+  // @include mat.dialog-theme($light-theme);
+  // @include mat.tooltip-theme($light-theme);
+  // @include mat.form-field-theme($light-theme);
+  // @include mat.input-theme($light-theme);
+  // @include mat.select-theme($light-theme);
+  // @include mat.divider-theme($light-theme);
   @include mat.system-level-colors($light-theme);
   @include mat.system-level-typography($light-theme);
 
   &.dark-theme {
     color-scheme: dark;
-    @include mat.all-component-themes($dark-theme);
+    // @include mat.button-theme($dark-theme);
+    // @include mat.icon-button-theme($dark-theme);
+    // @include mat.fab-theme($dark-theme);
+    // @include mat.card-theme($dark-theme);
+    // @include mat.dialog-theme($dark-theme);
+    // @include mat.tooltip-theme($dark-theme);
+    // @include mat.form-field-theme($dark-theme);
+    // @include mat.input-theme($dark-theme);
+    // @include mat.select-theme($dark-theme);
+    // @include mat.divider-theme($dark-theme);
     @include mat.system-level-colors($dark-theme);
     @include mat.system-level-typography($dark-theme);
   }
 
-  // Global smooth transition for theme changes
   transition:
     background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -71,15 +88,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  // Apply smooth transition to all themed components
-  * {
-    transition:
-      background-color 0.35s ease,
-      color 0.35s ease,
-      border-color 0.35s ease,
-      box-shadow 0.35s ease;
-  }
-
   main {
     min-height: 100vh;
     padding: 1.5rem 1.2rem 2rem;
@@ -92,13 +100,6 @@ body {
     padding: 0 16px;
   }
 
-  input,
-  textarea,
-  button {
-    font: inherit;
-  }
-
-  // Custom premium scrollbar
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -128,57 +129,9 @@ body {
 .mat-mdc-icon-button,
 .mat-mdc-fab {
   border-radius: 999px;
-  font-weight: 600;
-  text-transform: none;
 }
 
 .mat-mdc-card {
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 1.25rem;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-  background: var(--mat-sys-surface-container-highest);
-}
-
-.mat-mdc-toolbar {
-  box-shadow: none;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
-}
-
-.mat-mdc-form-field-wrapper {
-  border-radius: 0.9rem;
-}
-
-.mat-mdc-input-element {
-  border-radius: 0.9rem;
-}
-
-.mat-mdc-dialog-container,
-.mat-mdc-dialog-layout {
-  backdrop-filter: blur(10px);
-}
-
-.mat-mdc-chip,
-.mat-mdc-chip-set {
-  border-radius: 999px;
-}
-
-.mat-mdc-card-header,
-.mat-mdc-card-content {
-  padding: 1.4rem 1.6rem;
-}
-
-.mat-mdc-card-actions {
-  padding: 1rem 1.6rem 1.4rem;
-}
-
-.mat-mdc-button.mat-primary {
-  box-shadow: 0 14px 30px rgba(117, 64, 0, 0.18);
-}
-
-.mat-mdc-button:not(.mat-primary) {
-  border: 1px solid transparent;
-}
-
-.mat-mdc-button:hover {
-  transform: translateY(-1px);
 }

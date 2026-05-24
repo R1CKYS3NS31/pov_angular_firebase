@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, OnDestroy, output } from '@angular/core';
 
-import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,7 +10,7 @@ import { debounceTime } from 'rxjs/operators';
 @Component({
   selector: 'app-home-filters',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatIconModule],
+  imports: [MatInputModule, MatSelectModule, MatFormFieldModule, MatIconModule],
   templateUrl: './home-filters.html',
   styleUrls: ['./home-filters.scss'],
 })

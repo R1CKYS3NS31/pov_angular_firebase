@@ -57,3 +57,27 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+## PoV - Angular + Angular Material + Firebase
+
+### How to Initialize Firebase
+```bash
+$ npm install -g firebase-tools
+$ firebase login
+$ firebase init 
+$ firebase deploy --only hosting:pointofview
+```
+
+## Build
+```bash
+$ npm run build
+```
+
+## Deploy
+```bash
+$ npm run deploy
+```
+
+## Hosted on Firebase
+[PoV](https://pointofview.web.app/)
