@@ -53,8 +53,8 @@
           </h2>
           <p class="profile-bio">{{ userService.user()?.description ?? 'No bio provided.' }}</p>
           <div class="stats-box">
-            <span class="stats-number">{{ userService.userPoVs().content.length || 0 }}</span> //
-            TODO: Change to real count when API supports it
+            <span class="stats-number">{{ userService.userPoVs().content.length || 0 }}</span>
+            <!-- TODO: Change to real count when API supports it -->
             <span class="stats-label">Perspectives</span>
           </div>
         </div>
