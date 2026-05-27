@@ -49,3 +49,6 @@ Thumbs.db
 # AI generated files
 *.agent
 
+# Environment files
+.env
+/src/environments/environment*.ts
